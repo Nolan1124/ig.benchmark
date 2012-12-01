@@ -41,7 +41,7 @@ int
 main (int argc, char **argv)
 {
   int * restrict has_adj;
-  int fd;
+  FILE* fd;
   FILE* fd2;
   int64_t desired_nedge;
   if (sizeof (int64_t) < 8) {
@@ -80,7 +80,7 @@ main (int argc, char **argv)
       fprintf(stderr,"Opening file %s (%d)\n",dumpname,fd2);
   }
   else
-    fd = 0;
+    fd2 = 0;
 
   if (fd2 == 0) {
     fprintf (stderr, "Cannot open output file : %s\n",
@@ -88,7 +88,7 @@ main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  size_t s;
+
   /*
   fprintf(stderr,"Writing edges (%p) (%d) \n",IJ,(2*nedge*sizeof(*IJ)));
   s = write (fd, IJ, 2 * nedge * sizeof (*IJ));
@@ -98,8 +98,16 @@ main (int argc, char **argv)
 
 
   fprintf(stderr,"Writing fstream  edges (%p) (%d) \n",IJ,(2*nedge*sizeof(*IJ)));
-  s = fwrite (IJ,2 * nedge * sizeof (*IJ),1,fd2);
-  fprintf(stderr,"Wrote (%d)\n",s);
+//  s = fwrite (IJ,2 * nedge * sizeof (*IJ),1,fd2);
+  {
+      int i = 0;
+      for(i = 0;i < nedge;i++ )
+      {
+          fprintf(fd2,"%d,%d\n",IJ[i].v0,IJ[i].v1);
+      }
+  }
+
+
   
   fclose (fd2);
  
@@ -108,11 +116,10 @@ main (int argc, char **argv)
       rootname = buffer;
   }
   fprintf(stderr,"Root name=(%s) dumpname=(%s)\n",rootname,dumpname);
-  if (rootname)
-    fd = open (rootname, O_WRONLY|O_CREAT|O_TRUNC, 0666);
-  else
-    fd = -1;
+  fd = fopen (rootname,"w"); //O_WRONLY|O_CREAT|O_TRUNC, 0666);
+  
 
+  
   if (rootname >= 0) {
     has_adj = xmalloc_large (nvtx_scale * sizeof (*has_adj));
     OMP("omp parallel") {
@@ -135,7 +142,10 @@ main (int argc, char **argv)
       while (m < NBFS && t < nvtx_scale) {
 	double R = mrg_get_double_orig (prng_state);
 	if (!has_adj[t] || (nvtx_scale - t)*R > NBFS - m) ++t;
-	else bfs_root[m++] = t++;
+	else {
+            bfs_root[m++] = t++;
+//            fprintf(stderr,"bfs[%d] = %d\n",m-1,bfs_root[m-1]);
+        }
       }
       if (t >= nvtx_scale && m < NBFS) {
 	if (m > 0) {
@@ -151,8 +161,17 @@ main (int argc, char **argv)
 
     xfree_large (has_adj);
     fprintf(stderr,"Root size %d\n",NBFS*sizeof (*bfs_root));
-    write (fd, bfs_root, NBFS * sizeof (*bfs_root));
-    close (fd);
+    //write (fd, bfs_root, NBFS * sizeof (*bfs_root));
+    {
+        int i;
+        for(i = 0;i < NBFS_max; i++)
+        {
+            fprintf(fd,"%d\n",bfs_root[i]);
+        }
+    }
+    
+    fclose (fd);
+    
   }
 
   return EXIT_SUCCESS;
