@@ -13,7 +13,6 @@
 	<property name="ig3.root" value="${env.IG_HOME}"/>
 	<property name="ig3.lib" value="${ig3.root}/lib"/>
 	<property name="tool.lib" value="${env.PWD}/tools/lib"/>
-	<property name="neo.jars" value="${env.PWD}/neo-jars" />
 	    
 	<target name="prepare" description="Preparing build directory">
 		<mkdir dir="${build.dir}" />
@@ -38,73 +37,28 @@
 		</javac>
 	</target>
 
-	<target name="ig-jar" depends="ig3-compile" description="Compile all source code.">
-		<jar jarfile="${build.dir}/ig.jar" basedir="${build.classes}">
+	<target name="ig3-jar" depends="ig3-compile" description="Compile all source code.">
+		<jar jarfile="${build.dir}/ig3.jar" basedir="${build.classes}">
 			<manifest>
-		 		<attribute name="Class-Path" value="${ig.lib}/InfiniteGraph.jar"/>
+		 		<attribute name="Class-Path" value="${ig3.lib}/InfiniteGraph.jar"/>
 			</manifest>
 		</jar>  
 	</target>
 
-	<target name="neo-embedded-compile" depends="common-compile" description="Compile all source code.">
-                <javac srcdir="${src.neo_embedded.dir}" destdir="${build.classes}" includeantruntime="false" debug="true" debuglevel="lines,source">
-                <classpath location="${neo.jars}/neo4j-kernel-1.5.M01.jar"/>
-                <classpath location="${neo.jars}/neo4j-lucene-index-1.5.M01.jar"/>  
-                <classpath location="${neo.jars}/jersey-client-1.4.jar"/>               
-                <classpath location="${neo.jars}/jersey-core-1.4.jar"/>     
-                <classpath location="${tools}/pngj-0.62/pngj.jar"/>                            
-                </javac>
-    </target>
-
-
- 	<target name="neo-embedded-jar" depends="neo-embedded-compile" description="Compile all source code.">
-                <jar jarfile="${build.dir}/neo.jar" basedir="${build.classes}">
-                        <manifest>
-                                <attribute name="Class-Path" value="${neo.jars}/neo4j-kernel-1.5.M01.jar"/>
-                        </manifest>
-                </jar>  
-   </target>
-
-
-
-	<target name="neo-server-compile" depends="common-compile" description="Compile all source code.">
-                <javac srcdir="${src.neo_server.dir}" destdir="${build.classes}" includeantruntime="false" debug="true" debuglevel="lines,source">
-                <classpath location="${neo.jars}/neo4j-kernel-1.5.M01.jar"/>
-                <classpath location="${neo.jars}/neo4j-lucene-index-1.5.M01.jar"/>  
-                <classpath location="${neo.jars}/jersey-client-1.4.jar"/>               
-                <classpath location="${neo.jars}/jersey-core-1.4.jar"/>    
-                <classpath location="${tools}/pngj-0.62/pngj.jar"/>                             
-				<classpath location="${tools}/lib/json_simple-1.1.jar"/>
-            </javac>
-    </target>
-
-	<target name="neo-server-jar" depends="neo-server-compile" description="Compile all source code.">
-                <jar jarfile="${build.dir}/neo_server.jar" basedir="${build.classes}">
-                        <manifest>
-                                <attribute name="Class-Path" value="${neo.jars}/neo4j-kernel-1.5.M01.jar"/>
-                        </manifest>
-                </jar>  
-   </target>
-
-
 	<target name="benchmark-compile" depends="common-compile" description="Compile all source code.">
 		<javac srcdir="${src.main.dir}" destdir="${build.classes}" includeantruntime="false" debug="true" debuglevel="lines,source">
 			<classpath location="${tool.lib}/commons-cli-1.2.jar"/>
-			<classpath location="${build.jar}/ig.jar"/>
-			<classpath location="${build.jar}/neo_server.jar"/>	
-			<classpath location="${build.jar}/neo_embedded.jar"/>
+			<classpath location="${build.jar}/ig3.jar"/>
 		</javac>
 	</target>
 				
-	<target name="benchmark-jar" depends="benchmark-compile,neo-embedded-jar,neo-server-jar" description="Generate Benchmark main.">
+	<target name="benchmark-jar" depends="benchmark-compile" description="Generate Benchmark main.">
 		<jar jarfile="${build.dir}/benchmark.jar" basedir="${build.classes}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="bench.main.Benchmark"/>
 				<attribute name="Class-Path" value="
 				${build.dir}/ig.jar 
-				${build.dir}/neo_server.jar 
-				${build.dir}/neo_embedded.jar 
 				${neo.jars}/lucene-core-3.1.0.jar
 				${neo.jars}/neo4j-kernel-1.5.M01.jar 
 				${neo.jars}/geronimo-jta_1.1_spec-1.1.1.jar  
@@ -121,6 +75,6 @@
 	</target>
 	
 
-	<target name="all" depends="neo-server-jar,neo-embedded-jar,ig-jar,benchmark-jar" description="Build all targets (clean,jar).">
+	<target name="all" depends="ig3-jar,benchmark-jar" description="Build all targets (clean,jar).">
 	</target>
 </project>
