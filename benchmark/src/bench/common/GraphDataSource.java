@@ -29,8 +29,10 @@ public class GraphDataSource
     
     public boolean initialize() throws FileNotFoundException
     {
-        this.edgeListReader = new BufferedReader(new FileReader(edgeListPath));
-        this.searchListReader = new BufferedReader(new FileReader(searchListPath));
+        if(edgeListPath != null)
+            this.edgeListReader = new BufferedReader(new FileReader(edgeListPath));
+        if(searchListPath != null)
+            this.searchListReader = new BufferedReader(new FileReader(searchListPath));
         this.offset = this.block * this.getSize();
         return true;
     }

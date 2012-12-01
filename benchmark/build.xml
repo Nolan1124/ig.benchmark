@@ -59,17 +59,11 @@
 				<attribute name="Main-Class" value="bench.main.Benchmark"/>
 				<attribute name="Class-Path" value="
 				${build.dir}/ig.jar 
-				${neo.jars}/lucene-core-3.1.0.jar
-				${neo.jars}/neo4j-kernel-1.5.M01.jar 
-				${neo.jars}/geronimo-jta_1.1_spec-1.1.1.jar  
-				${neo.jars}/neo4j-lucene-index-1.5.M01.jar 
-				${neo.jars}/jersey-client-1.4.jar 
-				${neo.jars}/jersey-core-1.4.jar 
 				${tool.lib}/commons-cli-1.2.jar 
 				${tools}/pngj-0.62/pngj.jar
 				${tools}/lib/json_simple-1.1.jar
-				${ig.lib}/InfiniteGraph.jar 
-				${ig.lib}/slf4j-simple-1.6.1.jar"/>
+				${ig3.lib}/InfiniteGraph.jar 
+				${ig3.lib}/slf4j-simple-1.6.1.jar"/>
 			</manifest>
 		</jar>	
 	</target>

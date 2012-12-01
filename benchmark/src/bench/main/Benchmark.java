@@ -89,7 +89,8 @@ public class Benchmark
             this.showHelp(programName);
             return false;
         }
-        else{
+        else
+        {
             String value = this.commandLine.getOptionValue("engine");
             if(value == null)
             {
@@ -103,7 +104,8 @@ public class Benchmark
                 return false;
             }
             this.operation = this.commandLine.getOptionValue("operation");
-            if(this.operation == null){
+            if(this.operation == null)
+            {
                 this.showHelp(programName);
                 return false;
             }
@@ -112,7 +114,8 @@ public class Benchmark
         return true;
     }
 
-    private void setupBenchmark() throws Exception{
+    private void setupBenchmark() throws Exception
+    {
         int scale = (Integer.parseInt(this.commandLine.getOptionValue("scale",new Integer(-1).toString())));
         int size =  (Integer.parseInt(this.commandLine.getOptionValue("size",new Integer(-1).toString())));
         int tsize = (Integer.parseInt(this.commandLine.getOptionValue("tsize",new Integer(10000).toString())));
@@ -125,7 +128,8 @@ public class Benchmark
         boolean ascii = this.commandLine.hasOption("ascii");
         boolean useSize = false;
         
-        if(scale == -1){
+        if(scale == -1)
+        {
             scale = size;
             useSize = true;
         }
@@ -156,19 +160,24 @@ public class Benchmark
     }
 
     
-    public void run() throws Exception{
+    public void run() throws Exception
+    {
         this.setupBenchmark();
-        if(this.operation.equalsIgnoreCase("create")){
+        if(this.operation.equalsIgnoreCase("create"))
+        {
             this.benchmark.createDB();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("delete")){
+        else if(this.operation.equalsIgnoreCase("delete"))
+        {
             this.benchmark.initialize();
             this.benchmark.deleteDB();
         }
-        else if(this.operation.equalsIgnoreCase("accelerated_ingest")){
+        else if(this.operation.equalsIgnoreCase("accelerated_ingest"))
+        {
             int createNew = (Integer.parseInt(this.commandLine.getOptionValue("new",new Integer(0).toString())));
-            if(createNew > 0){
+            if(createNew > 0)
+            {
                 this.benchmark.createDB();
             }
             else{
@@ -179,49 +188,59 @@ public class Benchmark
             this.benchmark.flush();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("accelerated_e_ingest")){
+        else if(this.operation.equalsIgnoreCase("accelerated_e_ingest"))
+        {
             this.benchmark.openDB();
             this.benchmark.acceleratedEdgeIngest();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("standard_ingest")){
+        else if(this.operation.equalsIgnoreCase("standard_ingest"))
+        {
             int createNew = (Integer.parseInt(this.commandLine.getOptionValue("new",new Integer(0).toString())));
-            if(createNew > 0){
+            if(createNew > 0)
+            {
                 this.benchmark.createDB();
             }
-            else{
+            else
+            {
                 this.benchmark.openDB();
             }
             this.benchmark.standardIngest();
             this.benchmark.flush();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("search")){
+        else if(this.operation.equalsIgnoreCase("search"))
+        {
             this.benchmark.openDB();
             this.benchmark.search(false);
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("read")){
+        else if(this.operation.equalsIgnoreCase("read"))
+        {
             this.benchmark.openDB();
             this.benchmark.read();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("bfs")){
+        else if(this.operation.equalsIgnoreCase("bfs"))
+        {
             this.benchmark.openDB();
             this.benchmark.bfsTraverse();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("dfs")){
+        else if(this.operation.equalsIgnoreCase("dfs"))
+        {
             this.benchmark.openDB();
             this.benchmark.dfsTraverse();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("remove")){
+        else if(this.operation.equalsIgnoreCase("remove"))
+        {
             this.benchmark.openDB();
             this.benchmark.remove();
             this.benchmark.closeDB();
         }
-        else if(this.operation.equalsIgnoreCase("status")){
+        else if(this.operation.equalsIgnoreCase("status"))
+        {
             this.benchmark.databaseStatus();
         }
         else{
@@ -230,14 +249,15 @@ public class Benchmark
         }
     }
     
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception
+    {
         Benchmark runner = new Benchmark(); 
         runner.initialize();
         
-        if(runner.process(Benchmark.class.getName(),args)){
+        if(runner.process(Benchmark.class.getName(),args))
+        {
             runner.run();
         }
-        
     }
 }
 
