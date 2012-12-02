@@ -94,7 +94,7 @@ public class Benchmark
             String value = this.commandLine.getOptionValue("engine");
             if(value == null)
             {
-                System.out.println("'engine' is required use either 'ig|neo|rest_neo'");
+                System.out.println("'engine' is required use either 'ig2|ig3'");
                 return false;
             }
             else if(value.equalsIgnoreCase("ig3"))
