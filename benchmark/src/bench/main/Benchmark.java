@@ -4,8 +4,6 @@ import java.util.*;
 import java.io.*;
 import org.apache.commons.cli.*;
 import bench.common.*;
-//import bench.ig3.*;
-
 
 public class Benchmark
 {
@@ -97,6 +95,8 @@ public class Benchmark
                 System.out.println("'engine' is required use either 'ig2|ig3'");
                 return false;
             }
+            else if(value.equalsIgnoreCase("ig2"))
+                this.benchmark = new bench.ig2.IGBenchmark();
             else if(value.equalsIgnoreCase("ig3"))
                 this.benchmark = new bench.ig3.IGBenchmark();
             else{

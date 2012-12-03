@@ -32,9 +32,11 @@ public class Remove extends IGOperation
                 if(v != null)
                 {
                     Iterable<EdgeHandle> edgeHandle = v.getEdges();
-                    for(EdgeHandle e:edgeHandle){
+                    for(EdgeHandle e:edgeHandle)
+                    {
                         Edge edge = (Edge)e.getEdge();
-                        if(edge != null){
+                        if(edge != null)
+                        {
                             this.graphDB.removeEdge(e.getEdge());
                             this.counter++;
                         }

@@ -9,7 +9,7 @@ public class GraphVertexFactory extends VertexFactory{
     }
     
     public Object createIndex(GraphDatabase graphDB) throws Exception{
-        return IndexManager.<bench.ig2.Vertex>createGraphIndex(Vertex.class.getName(),"key");
+        return IndexManager.<bench.ig2.Vertex>createGraphIndex("vertexGraphIndex",Vertex.class.getName(),"key");
     }
 
     public Object initializeIndex(GraphDatabase graphDB) throws Exception{

@@ -74,13 +74,30 @@
 		</javac>
 	</target>
 				
-	<target name="benchmark-jar" depends="benchmark-compile" description="Generate Benchmark main.">
-		<jar jarfile="${build.dir}/benchmark.jar" basedir="${build.classes}">
+	<target name="benchmark-2-jar" depends="benchmark-compile" description="Generate Benchmark main.">
+		<jar jarfile="${build.dir}/benchmark.2.jar" basedir="${build.classes}">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
 				<attribute name="Main-Class" value="bench.main.Benchmark"/>
 				<attribute name="Class-Path" value="
-				${build.dir}/ig.jar 
+				${build.dir}/ig2.jar 
+				${tool.lib}/commons-cli-1.2.jar 
+				${tools}/pngj-0.62/pngj.jar
+				${tools}/lib/json_simple-1.1.jar
+				${ig2.lib}/InfiniteGraph.jar 
+				${ig2.lib}/oojava.jar
+				${ig2.lib}/slf4j-simple-1.6.1.jar"/>
+			</manifest>
+		</jar>	
+	</target>
+	
+	<target name="benchmark-3-jar" depends="benchmark-compile" description="Generate Benchmark main.">
+		<jar jarfile="${build.dir}/benchmark.3.jar" basedir="${build.classes}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="bench.main.Benchmark"/>
+				<attribute name="Class-Path" value="
+				${build.dir}/ig3.jar 
 				${tool.lib}/commons-cli-1.2.jar 
 				${tools}/pngj-0.62/pngj.jar
 				${tools}/lib/json_simple-1.1.jar
@@ -89,8 +106,7 @@
 			</manifest>
 		</jar>	
 	</target>
-	
 
-	<target name="all" depends="ig2-jar,ig3-jar,benchmark-jar" description="Build all targets (clean,jar).">
+	<target name="all" depends="ig2-jar,ig3-jar,benchmark-2-jar,benchmark-3-jar" description="Build all targets (clean,jar).">
 	</target>
 </project>

@@ -1,11 +1,12 @@
 package bench.ig3;
 
-import com.infinitegraph.indexing.*;
+import com.infinitegraph.indexing.IndexManager;
 import com.infinitegraph.GraphDatabase;
-import com.infinitegraph.*;
+import com.infinitegraph.Query;
 
 public class GraphVertexFactory extends VertexFactory
 {
+    
     public GraphVertexFactory(boolean useLocalMap)
     {
         super(useLocalMap);

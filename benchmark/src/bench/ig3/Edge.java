@@ -3,5 +3,7 @@ import com.infinitegraph.BaseEdge;
 
 public class Edge extends BaseEdge
 {
-    public Edge(){}
+    public Edge()
+    {
+    }
 }
