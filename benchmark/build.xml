@@ -3,13 +3,20 @@
 	<exec executable="hostname" failifexecutionfails="true" outputproperty="env._HOST_" />
 	<property environment="env"/>
 	<property name="tools" value="${env.PWD}/tools"/>
+	
 	<property name="src.common.dir" value="src/bench/common" />
+
+	<property name="src.ig2.dir" value="src/bench/ig2" />
 	<property name="src.ig3.dir" value="src/bench/ig3" />
 	<property name="src.main.dir" value="src/bench/main" />
+
 	<property name="build.dir" value="build" />
 	<property name="build.classes" value="${build.dir}/classes" />
 	<property name="build.jar" value="${build.dir}/jar" />
 	<property name="build.lib" value="${build.dir}/lib" />
+	
+	<property name="ig2.root" value="${env.IG_HOME_2}"/>
+	<property name="ig2.lib" value="${ig2.root}/lib"/>
 	<property name="ig3.root" value="${env.IG_HOME}"/>
 	<property name="ig3.lib" value="${ig3.root}/lib"/>
 	<property name="tool.lib" value="${env.PWD}/tools/lib"/>
@@ -45,6 +52,20 @@
 		</jar>  
 	</target>
 
+   <target name="ig2-compile" depends="common-compile" description="Compile all source code.">
+		<javac srcdir="${src.ig2.dir}" destdir="${build.classes}" includeantruntime="false" debug="true" debuglevel="lines,source">
+			<classpath location="${ig2.lib}/InfiniteGraph.jar"/>
+		</javac>
+	</target>
+
+	<target name="ig2-jar" depends="ig2-compile" description="Compile all source code.">
+		<jar jarfile="${build.dir}/ig2.jar" basedir="${build.classes}">
+			<manifest>
+		 		<attribute name="Class-Path" value="${ig2.lib}/InfiniteGraph.jar"/>
+			</manifest>
+		</jar>  
+	</target>
+
 	<target name="benchmark-compile" depends="common-compile" description="Compile all source code.">
 		<javac srcdir="${src.main.dir}" destdir="${build.classes}" includeantruntime="false" debug="true" debuglevel="lines,source">
 			<classpath location="${tool.lib}/commons-cli-1.2.jar"/>
@@ -69,6 +90,6 @@
 	</target>
 	
 
-	<target name="all" depends="ig3-jar,benchmark-jar" description="Build all targets (clean,jar).">
+	<target name="all" depends="ig2-jar,ig3-jar,benchmark-jar" description="Build all targets (clean,jar).">
 	</target>
 </project>
