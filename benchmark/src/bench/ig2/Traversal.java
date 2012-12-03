@@ -4,9 +4,11 @@ import com.infinitegraph.navigation.*;
 import java.util.*;
 import bench.common.*;
 
-class BenchResultsHandler implements NavigationResultHandler {
+class BenchResultsHandler implements NavigationResultHandler
+{
     private long counter = 0;
-    public long getCounter(){
+    public long getCounter()
+    {
         return this.counter;
     }
     public BenchResultsHandler(){}

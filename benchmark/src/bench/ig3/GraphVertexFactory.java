@@ -2,27 +2,30 @@ package bench.ig3;
 
 import com.infinitegraph.indexing.*;
 import com.infinitegraph.GraphDatabase;
+import com.infinitegraph.*;
 
 public class GraphVertexFactory extends VertexFactory
 {
-    public GraphVertexFactory(boolean useLocalMap){
+    public GraphVertexFactory(boolean useLocalMap)
+    {
         super(useLocalMap);
     }
 
-
-    /*
-    public Object createIndex(GraphDatabase graphDB) throws Exception{
-        return IndexManager.<Vertex>createGraphIndex(Vertex.class.getName(),"key");
+    public Object createIndex(GraphDatabase graphDB) throws Exception
+    {
+        IndexManager.addGraphIndex("vertexGraphIndex", bench.ig3.Vertex.class.getName(), new String[] {"key"}, true);
+        return null;
     }
 
-    public Object initializeIndex(GraphDatabase graphDB) throws Exception{
-        return IndexManager.<Vertex>getGraphIndex(Vertex.class.getName(),"key");
+    public Object initializeIndex(GraphDatabase graphDB) throws Exception
+    {
+        return null;
     }
-
-    public synchronized Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception{
-        return ((GraphIndex<Vertex>)object).getSingleResult(value);
+    
+    public synchronized bench.ig3.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
+    {
+        Query<bench.ig3.Vertex> query = graphDB.createQuery(bench.ig3.Vertex.class.getName(),String.format("key == %d",value));
+        return query.getSingleResult();
     }
-
-    */
     
 }

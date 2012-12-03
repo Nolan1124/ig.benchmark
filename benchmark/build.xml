@@ -17,6 +17,7 @@
 	
 	<property name="ig2.root" value="${env.IG_HOME_2}"/>
 	<property name="ig2.lib" value="${ig2.root}/lib"/>
+	
 	<property name="ig3.root" value="${env.IG_HOME}"/>
 	<property name="ig3.lib" value="${ig3.root}/lib"/>
 	<property name="tool.lib" value="${env.PWD}/tools/lib"/>
