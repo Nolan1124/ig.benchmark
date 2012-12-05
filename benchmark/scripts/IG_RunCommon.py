@@ -4,12 +4,15 @@ import IG_PropertyFile
 import sys
 import types
 import time
-
+import platform
 from collections import deque
 
+import IG_PropertyFile
+import IG_Config
+
 class Runner:
-    def __init__(self,engineRootMap):
-        self.engineRootMap = engineRootMap
+    def __init__(self,config):
+        self.config = config
         self.sourcePath = os.path.dirname(os.path.abspath(__file__))
         self.jarPath    = os.path.join(os.path.dirname(self.sourcePath),"build")
         self.ig2Jar     = os.path.join(self.jarPath,"benchmark.2.jar")
@@ -60,7 +63,6 @@ class Runner:
 
     def cleanResultsPath(self,name):
         listing = os.listdir(name)
-        print listing
         for i in listing:
             if i.endswith(".profile"):
                 os.remove(os.path.join(name,i))
@@ -68,23 +70,64 @@ class Runner:
             pass
         pass
 
-    def run_ig_3(self,operation,scale,propertyPath,threads,vthreads,txsize,index,isNew):
-        command = "(export DYLD_LIBRARY_PATH=%s;"%(os.path.join(self.engineRootMap["ig3"],"lib"))
-        command += "java -jar %s -engine ig3 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s -new %d)"%(self.ig3Jar,operation,scale,propertyPath,threads,vthreads,txsize,index,isNew)  
-        print command
+    def ig3_command(self,command):
+        if platform.system().lower().startswith("darwin"):
+            return "(export DYLD_LIBRARY_PATH=%s;%s)"%(os.path.join(self.config.IG3_Root,"lib"),command)
+        return "(export LD_LIBRARY_PATH=%s;%s)"%(os.path.join(self.config.IG3_Root,"lib"),command)
+    
+    def create_db_ig3(self,propertyFile):
+        command = self.ig3_command("java -jar %s -engine ig3 -operation create -property %s"%(self.ig3Jar,propertyFile.fileName))
         return os.system(command)
+            
+
+    def run_ig_3(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew):
+        propertyFile.properties["IG.BootFilePath"]=self.config.BootFilePath
+        if isNew:
+            if os.path.exists(os.path.join(self.config.BootFilePath,"bench.boot")):
+                os.system(self.ig3_command("objy DeleteFd -bootFile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+            locationConfig = IG_PropertyFile.IG_LocationConfigFile(os.path.join(self.config.BootFilePath,"Location.config"))
+            locationConfig.generate(self.config.Disks)
+            propertyFile.properties["IG.Placement.PreferenceRankFile"] = os.path.join(self.config.BootFilePath,"Location.config")
+            propertyFile.generate()
+            self.create_db_ig3(propertyFile)
+            self.setup_IG3_Location(propertyFile)
+            pass
+        command = "java -jar %s -engine ig3 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s"%(self.ig3Jar,
+                                                                                                                     operation,scale,
+                                                                                                                     propertyFile.fileName,
+                                                                                                                     threads,
+                                                                                                                     vthreads,txsize,
+                                                                                                                     index)  
+        command = self.ig3_command(command)
+        return os.system(command)
+
+    def setup_IG3_Location(self,propertyFile):
+        
+        counter = 1
+        for disk in self.config.Disks:
+            command = self.ig3_command("objy AddStorageLocation -name %s -storageLocation %s::%s -bootfile %s"%(
+                disk.name,
+                disk.host,
+                disk.device,
+                os.path.join(self.config.BootFilePath,"bench.boot")))
+            os.system(command)
+            counter += 1
+            pass
+        os.system(self.ig3_command("objy ListStorage -bootfile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+        pass
+        
     
     def v_ingest_f_tx(self,igPropertyFile,sizes):
         cwd  = os.getcwd()
         path = self.createResultsPath("v_ingest_f_tx")
         self.cleanResultsPath(path)
         os.chdir(path)
-        igPropertyFile.generate()
+        
         for size in sizes:
             scale = size[0]
             txsize = size[1]
             print "running txsize:%d scale:%d"%(txsize,scale)
-            self.run_ig_3("standard_ingest",scale,igPropertyFile.fileName,1,1,txsize,"none",1)
+            self.run_ig_3("standard_ingest",scale,igPropertyFile,1,1,txsize,"none",1)
             pass
         os.chdir(cwd)
         pass

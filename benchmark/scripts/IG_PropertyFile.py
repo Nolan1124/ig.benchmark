@@ -1,8 +1,9 @@
+import IG_Config
+
 class __Defaults__:
     Defaults = {
         "IG.BootFilePath":".",
         "IG.LockServerHost":"127.0.0.1",
-        "IG.InstanceId":"5551",
         "IG.Placement.ImplClass":"com.infinitegraph.impl.plugins.adp.DistributedPlacement",
         }
     
@@ -25,6 +26,29 @@ class IG_PropertyFile:
         f.flush()
         f.close()
 
+
+class IG_LocationConfigFile:
+    def __init__(self,fileName):
+        self.fileName = fileName
+        pass
+
+    def generate(self,disks):
+        f = file(self.fileName,"w")
+        print >> f,'<?xml version="1.0" encoding="UTF-8"?>'
+        print >> f,'<InfiniteGraph>'
+        print >> f,'<LocationPreferences allowNonPreferredLocations="true">'
+        print >> f,'<LocationPreferenceRank>'
+        for disk in disks:
+            print >> f,'<StorageLocation value="%s"/>'%(disk.name)
+            pass
+        print >> f,'</LocationPreferenceRank>'
+        print >> f,'</LocationPreferences>'
+        print >> f,'</InfiniteGraph>'
+
+        f.flush()
+        f.close()
+        pass
+    pass
 
 #p = IG_PropertyFile()
 #p.generate()
