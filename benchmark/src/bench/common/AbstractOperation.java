@@ -8,6 +8,7 @@ public abstract class AbstractOperation implements Runnable
     protected GraphDataSource dataSource;
     protected int operationsPerTransaction;
     protected long counter = 0;
+    protected int verboseLevel = 1;
     
     public AbstractOperation(int id,GraphDataSource dataSource,int operationsPerTransaction)
     {
@@ -48,9 +49,11 @@ public abstract class AbstractOperation implements Runnable
     {
         try
         {
-            System.out.printf("\t[%d] Started %s \n",this.id,this.getName());
+            if(this.verboseLevel >= 2)
+                System.out.printf("\t[%d] Started %s \n",this.id,this.getName());
             this.operate();
-            System.out.printf("\t[%d] Completed %s [%d]\n",this.id,this.getName(),counter);
+            if(this.verboseLevel >= 2)
+                System.out.printf("\t[%d] Completed %s [%d]\n",this.id,this.getName(),counter);
         }
         catch(Exception e)
         {

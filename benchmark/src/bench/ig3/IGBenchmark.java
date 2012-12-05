@@ -124,7 +124,8 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
     public boolean createDB() throws Exception
     {
         boolean status = true;
-        System.out.println("\t\t> Create DB ...");
+        if(this.verboseLevel >= 2)
+            System.out.println("\t\t> Create DB ...");
         try
         {
             this.deleteDB();
@@ -151,14 +152,16 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
             ce.printStackTrace();
             status = false;
         }
-        System.out.println("\t\t< Create DB ...");
+        if(this.verboseLevel >= 2)
+            System.out.println("\t\t< Create DB ...");
         return status;
     }
 
     public boolean deleteDB()
     {
         boolean status = true;
-        System.out.println("\t\t> Delete DB ...");
+        if(this.verboseLevel >= 2)
+            System.out.println("\t\t> Delete DB ...");
         try
         {
             GraphFactory.delete(this.getDbName(),this.getPropertyFileName());
@@ -171,7 +174,8 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
             System.out.println(ce.getMessage());
             status = false;
         }
-        System.out.println("\t\t< Delete DB ...");
+        if(this.verboseLevel >= 2)
+            System.out.println("\t\t< Delete DB ...");
         return status;
     }
     

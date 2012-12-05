@@ -2,7 +2,8 @@ package bench.common;
 import java.util.*;
 import java.io.*;
 
-public abstract class AbstractBenchmark{
+public abstract class AbstractBenchmark
+{
     public final static int DefaultNumberOfThreads = 1;
     public final static int DefaultTransactionSize = 10000;
     public final static IndexType DefaultIndexType = IndexType.Graph;
@@ -10,7 +11,8 @@ public abstract class AbstractBenchmark{
     public final static String DefaultDatabaseName = "bench";
     public final static String DefaultPropertyFile = "configuration.properties";
     public final static String DefaultServerURI = "http://127.0.0.1:7474/db/data";
-    
+
+    protected int verboseLevel = 1;
     protected int numberOfThreads = DefaultNumberOfThreads;
     protected int numberOfVertexIngestThreads = DefaultNumberOfThreads;
     protected int numberOfEdgeIngestThreads = DefaultNumberOfThreads;
@@ -54,7 +56,7 @@ public abstract class AbstractBenchmark{
     
     protected void line()
     {
-        System.out.println("\t-------------------------------------------------");
+        System.out.println("\t-------------------------------------------------------------------------------------------------------------");
     }
     
     public void deleteFileOrDirectory(File file )
@@ -72,6 +74,10 @@ public abstract class AbstractBenchmark{
         }
     }
 
+    public int getVerboseLevel()
+    {
+        return this.verboseLevel;
+    }
     
     public List<LongPair> getSearchList(int index)
     {
@@ -100,31 +106,43 @@ public abstract class AbstractBenchmark{
         return edgeIngestEvent;
     }
 
-    public ProfileEvent getSearchEvent(){
+    public ProfileEvent getSearchEvent()
+    {
         return searchEvent;
     }
 
-    public int getLimit(){
+    public int getLimit()
+    {
         return limit;
     }
 
-    public void setLimit(int limit){
+    public void setLimit(int limit)
+    {
         this.limit = limit;
     }
 
-    public String getDbName(){
+    public String getDbName()
+    {
         return this.dbName;
     }
      
-    public String getPropertyFileName(){
+    public String getPropertyFileName()
+    {
         return this.propertyFileName;
     }
 
-    public void setDbName(String dbName){
+    public void setVerboseLevel(int verboseLevel)
+    {
+        this.verboseLevel = verboseLevel;
+    }
+    
+    public void setDbName(String dbName)
+    {
         this.dbName = dbName;
     }
     
-    public void setPropertyFileName(String propertyFileName){
+    public void setPropertyFileName(String propertyFileName)
+    {
         this.propertyFileName = propertyFileName;
     }
 
@@ -235,8 +253,8 @@ public abstract class AbstractBenchmark{
         HashMap<Thread,AbstractOperation> map = new HashMap<Thread,AbstractOperation>();
         int i;
         String fileName = null;
-        this.line();
-        System.out.printf("\t - %s -\n",name);
+
+//        System.out.printf("\t - %s -\n",name);
         if(event != null)
             event.start();
         for(i=0;i<numberOfThreads;i++)
@@ -267,15 +285,16 @@ public abstract class AbstractBenchmark{
         if(event != null)
         {
             event.stop(totalCounter);
-            this.line();
-            System.out.printf("\tTime(ms)       :%d\n",event.getElapsedTime());
-            System.out.printf("\tRate(per sec)  :%2.2f\n",event.getRate());
-            System.out.printf("\tSize           :%d\n",totalCounter);
-            System.out.printf("\tTx size        :%d\n",this.transactionSize);
-            System.out.printf("\tThreads        :%d\n",numberOfThreads);
+            //this.line();
+            System.out.printf("\t[%s]",name);
+            System.out.printf("\ttime(ms):%d",event.getElapsedTime());
+            System.out.printf("\trate(ops/sec):%2.2f",event.getRate());
+            System.out.printf("\tsize:%d",totalCounter);
+            System.out.printf("\ttx_size:%d",this.transactionSize);
+            System.out.printf("\tthreads:%d\n",numberOfThreads);
             event.save(fileName,numberOfThreads,this.transactionSize,indexType,databaseSize);       
         }
-        this.line();
+        //this.line();
 
         return totalCounter;
     }

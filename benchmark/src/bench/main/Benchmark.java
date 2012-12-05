@@ -38,8 +38,10 @@ public class Benchmark
         final String dbMessage = String.format("Database name [default=%s].",AbstractBenchmark.DefaultDatabaseName);
         final String propertyMessage = String.format("file path of the property name [default=%s].",AbstractBenchmark.DefaultPropertyFile);
         final String serverMessage = String.format("server uri used for the rest-neo engine [default=%s].",AbstractBenchmark.DefaultServerURI);
+        final String verboseMessage = String.format("Verbose level (default:1");
         
         options.addOption(new Option("help",helpMessage));
+        options.addOption(OptionBuilder.withArgName("integer").hasArg().withDescription(verboseMessage).create("verbose"));
         options.addOption(OptionBuilder.withArgName("string").hasArg().withDescription(engineMessage).create("engine"));
         options.addOption(OptionBuilder.withArgName("integer").hasArg().withDescription(scaleMessage).create("scale"));
         options.addOption(OptionBuilder.withArgName("integer").hasArg().withDescription(sizeMessage).create("size"));
@@ -116,6 +118,7 @@ public class Benchmark
 
     private void setupBenchmark() throws Exception
     {
+        int verboseLevel = (Integer.parseInt(this.commandLine.getOptionValue("verbose",new Integer(1).toString())));
         int scale = (Integer.parseInt(this.commandLine.getOptionValue("scale",new Integer(-1).toString())));
         int size =  (Integer.parseInt(this.commandLine.getOptionValue("size",new Integer(-1).toString())));
         int tsize = (Integer.parseInt(this.commandLine.getOptionValue("tsize",new Integer(10000).toString())));
@@ -142,7 +145,7 @@ public class Benchmark
 
 
         dataSource.setBlock(block);
-        
+        this.benchmark.setVerboseLevel(verboseLevel);
         this.benchmark.setTransactionSize(tsize);
         this.benchmark.setGraphDataSource(dataSource);
         this.benchmark.setNumberOfVertexIngestThreads(numberOfVertexIngestThreads);
@@ -156,7 +159,8 @@ public class Benchmark
         this.benchmark.setServerURI(server);
         dataSource.initialize();
         this.benchmark.initialize();
-        System.out.println(this.benchmark.toString());
+        if(verboseLevel > 1)
+            System.out.println(this.benchmark.toString());
     }
 
     

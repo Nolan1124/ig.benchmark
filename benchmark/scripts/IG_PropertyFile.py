@@ -3,8 +3,7 @@ import IG_Config
 class __Defaults__:
     Defaults = {
         "IG.BootFilePath":".",
-        "IG.LockServerHost":"127.0.0.1",
-        "IG.Placement.ImplClass":"com.infinitegraph.impl.plugins.adp.DistributedPlacement",
+        "IG.LockServerHost":"127.0.0.1"
         }
     
 class IG_PropertyFile:

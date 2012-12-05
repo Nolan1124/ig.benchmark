@@ -29,14 +29,14 @@ class Runner:
         if not os.path.exists(self.rootResultsPath):
             os.mkdir(self.rootResultsPath)
             pass
-        print "IG2 :",self.ig2Jar
-        print "IG3 :",self.ig3Jar
-        print "Results:",self.rootResultsPath
+        #print "IG2 :",self.ig2Jar
+        #print "IG3 :",self.ig3Jar
+        #print "Results:",self.rootResultsPath
         if os.system("oocheckls -quiet") != 0:
             print >> sys.stderr,"ERROR: Lock server is not running."
             return False
         else:
-            print "Lock server is running on local host"
+            #   print "Lock server is running on local host"
             pass
         return True
 
@@ -84,7 +84,7 @@ class Runner:
         propertyFile.properties["IG.BootFilePath"]=self.config.BootFilePath
         if isNew:
             if os.path.exists(os.path.join(self.config.BootFilePath,"bench.boot")):
-                os.system(self.ig3_command("objy DeleteFd -bootFile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+                os.system(self.ig3_command("objy DeleteFd -quiet -noTitle -bootFile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
             locationConfig = IG_PropertyFile.IG_LocationConfigFile(os.path.join(self.config.BootFilePath,"Location.config"))
             locationConfig.generate(self.config.Disks)
             propertyFile.properties["IG.Placement.PreferenceRankFile"] = os.path.join(self.config.BootFilePath,"Location.config")
@@ -105,7 +105,7 @@ class Runner:
         
         counter = 1
         for disk in self.config.Disks:
-            command = self.ig3_command("objy AddStorageLocation -name %s -storageLocation %s::%s -bootfile %s"%(
+            command = self.ig3_command("objy AddStorageLocation -quiet -noTitle -name %s -storageLocation %s::%s -bootfile %s"%(
                 disk.name,
                 disk.host,
                 disk.device,
@@ -113,7 +113,7 @@ class Runner:
             os.system(command)
             counter += 1
             pass
-        os.system(self.ig3_command("objy ListStorage -bootfile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+        #os.system(self.ig3_command("objy ListStorage -noTitle -bootfile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
         pass
         
     
@@ -122,13 +122,20 @@ class Runner:
         path = self.createResultsPath("v_ingest_f_tx")
         self.cleanResultsPath(path)
         os.chdir(path)
-        
+        print "\n------------------------------------------------------------------------------------------------------------------------------"
+        print "Vertex Ingest Rate as a function of Transaction Size"
+        print "------------------------------------------------------------------------------------------------------------------------------"
+        counter = 1
+        total = len(sizes)
         for size in sizes:
             scale = size[0]
             txsize = size[1]
-            print "running txsize:%d scale:%d"%(txsize,scale)
+            print >> sys.stdout,"\t[%d/%d]"%(counter,total),
+            sys.stdout.flush()
+            counter += 1
             self.run_ig_3("standard_ingest",scale,igPropertyFile,1,1,txsize,"none",1)
             pass
+        print "------------------------------------------------------------------------------------------------------------------------------"
         os.chdir(cwd)
         pass
         

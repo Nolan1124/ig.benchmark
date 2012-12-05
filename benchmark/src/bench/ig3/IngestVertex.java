@@ -25,7 +25,8 @@ public class IngestVertex extends IGOperation
         long key = this.startKey;
         this.createWriteTransaction(false);
 
-        System.out.printf("[%d] Start ingest vertices at %d\n",this.id,key);
+        if(this.verboseLevel >= 2)
+            System.out.printf("[%d] Start ingest vertices at %d\n",this.id,key);
         while(counter < size)
         {
             Vertex vertex = vertexFactory.createVertex(this.graphDB,this.indexManager,key);
@@ -39,6 +40,7 @@ public class IngestVertex extends IGOperation
             }
         }
         this.commitTransaction();
-        System.out.printf("[%d] End ingest vertices at %d\n",this.id,key-1);
+        if(this.verboseLevel >= 2)
+            System.out.printf("[%d] End ingest vertices at %d\n",this.id,key-1);
     }
 }

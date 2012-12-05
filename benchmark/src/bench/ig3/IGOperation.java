@@ -9,7 +9,8 @@ public abstract class IGOperation extends bench.common.AbstractOperation
     protected VertexFactory vertexFactory = null;
     protected Object indexManager = null;
     protected Transaction currentTransaction = null;
-
+    protected int verboseLevel = 1;
+    
     public IGOperation(int id,bench.common.GraphDataSource dataSource,int operationsPerTransaction)
     {
         super(id,dataSource,operationsPerTransaction);
@@ -20,6 +21,7 @@ public abstract class IGOperation extends bench.common.AbstractOperation
         IGBenchmark igBenchmark = (IGBenchmark)benchmark;
         this.graphDB = igBenchmark.getGraphDB();
         vertexFactory = igBenchmark.getVertexFactory();
+        this.verboseLevel = benchmark.getVerboseLevel();
     }
 
     protected void createReadTransaction() throws Exception
@@ -40,7 +42,8 @@ public abstract class IGOperation extends bench.common.AbstractOperation
     
     protected void commitTransaction() throws Exception
     {
-        System.out.printf("\t\t[%d] %s Tx Commit [%d]\n",id,this.getName(),counter);
+        if(this.verboseLevel >= 3)
+            System.out.printf("\t\t[%d] %s Tx Commit [%d]\n",id,this.getName(),counter);
         if(this.currentTransaction != null)
         {
 //Will fail...
