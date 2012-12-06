@@ -3,7 +3,8 @@ import IG_Config
 class __Defaults__:
     Defaults = {
         "IG.BootFilePath":".",
-        "IG.LockServerHost":"127.0.0.1"
+        "IG.LockServerHost":"127.0.0.1",
+        "IG.InstanceId":5000
         }
     
 class IG_PropertyFile:

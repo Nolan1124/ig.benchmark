@@ -6,22 +6,25 @@ public class IngestVertex extends IGOperation{
     protected long startKey;
     protected long size;
         
-    public IngestVertex(int id,bench.common.GraphDataSource dataSource,int operationsPerTransaction){
+    public IngestVertex(int id,bench.common.GraphDataSource dataSource,int operationsPerTransaction)
+    {
         super(id,dataSource,operationsPerTransaction);
     }
 
-    public void initialize(bench.common.AbstractBenchmark benchmark) throws Exception{
+    public void initialize(bench.common.AbstractBenchmark benchmark) throws Exception
+    {
         super.initialize(benchmark);
         this.startKey = benchmark.getCurrentKey();
         this.size     = benchmark.getSizePerThread();
     }
     
-    public void operate() throws Exception{
+    public void operate() throws Exception
+    {
         this.counter = 0;
         long key = this.startKey;
         this.createWriteTransaction(false);
-
-        System.out.printf("[%d] Start ingest vertices at %d\n",this.id,key);
+        if(this.verboseLevel >= 2)
+            System.out.printf("[%d] Start ingest vertices at %d\n",this.id,key);
         while(counter < size){
             Vertex vertex = vertexFactory.createVertex(this.graphDB,this.indexManager,key);
             key += 1;
@@ -33,6 +36,7 @@ public class IngestVertex extends IGOperation{
             }
         }
         this.commitTransaction();
-        System.out.printf("[%d] End ingest vertices at %d\n",this.id,key-1);
+        if(this.verboseLevel >= 2)
+            System.out.printf("[%d] End ingest vertices at %d\n",this.id,key-1);
     }
 }

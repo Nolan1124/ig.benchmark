@@ -10,6 +10,24 @@ from collections import deque
 import IG_PropertyFile
 import IG_Config
 
+def os_system(command):
+    #print command
+    os.system(command)
+    pass
+
+def hilite(string, status, bold):
+    attr = []
+    if status:
+        # green
+        attr.append('32')
+    else:
+        # red
+        attr.append('31')
+        pass
+    if bold:
+        attr.append('1')
+    return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
+
 class Runner:
     def __init__(self,config):
         self.config = config
@@ -32,7 +50,7 @@ class Runner:
         #print "IG2 :",self.ig2Jar
         #print "IG3 :",self.ig3Jar
         #print "Results:",self.rootResultsPath
-        if os.system("oocheckls -quiet") != 0:
+        if os_system("oocheckls -quiet") != 0:
             print >> sys.stderr,"ERROR: Lock server is not running."
             return False
         else:
@@ -70,26 +88,71 @@ class Runner:
             pass
         pass
 
+    def ig2_command(self,command):
+        if platform.system().lower().startswith("darwin"):
+            return "(export DYLD_LIBRARY_PATH=%s;export PATH=%s:$PATH;%s)"%(os.path.join(self.config.IG2_Root,"lib"),
+                                                                            os.path.join(self.config.IG2_Root,"bin"),command)
+        return "(export LD_LIBRARY_PATH=%s;export PATH=%s:$PATH;%s)"%(os.path.join(self.config.IG2_Root,"lib"),os.path.join(self.config.IG2_Root,bin),command)
+    
+    
+    def create_db_ig2(self,propertyFile,index):
+        command = self.ig2_command("java -jar %s -engine ig2 -operation create -property %s -index %s"%(self.ig2Jar,propertyFile.fileName,index))
+        return os_system(command)
+    
+    def run_ig_2(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew):
+        propertyFile.properties["IG.BootFilePath"]=self.config.BootFilePath
+        if isNew:
+            if os.path.exists(os.path.join(self.config.BootFilePath,"bench.boot")):
+                os_system(self.ig2_command("oodeletefd -quiet -force %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+                pass
+            self.setup_IG2_Placement(propertyFile)
+            propertyFile.generate()
+            self.create_db_ig2(propertyFile,index)
+            pass
+        command = "java -jar %s -engine ig2 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s"%(self.ig2Jar,
+                                                                                                                     operation,scale,
+                                                                                                                     propertyFile.fileName,
+                                                                                                                     threads,
+                                                                                                                     vthreads,txsize,
+                                                                                                                     index)  
+        command = self.ig2_command(command)
+        return os_system(command)
+
+
+    def setup_IG2_Placement(self,propertyFile):
+        counter = 1
+        propertyFile.properties["IG.Placement.ImplClass"]="com.infinitegraph.impl.plugins.adp.DistributedPlacement"
+        for disk in self.config.Disks:
+            storageName  = "storage_%d"%(counter)
+            propertyFile.properties["IG.Placement.Distributed.Location.%s"%(disk.name)]  = "%s::%s"%(disk.host,disk.device)
+            propertyFile.properties["IG.Placement.Distributed.StorageSpec.%s.ContainerRange"%(storageName)]="1:*"
+            propertyFile.properties["IG.Placement.Distributed.GroupStorage.GraphData"]="%s:%s"%(disk.name,storageName)
+            counter += 1
+            pass
+        #os.system(self.ig3_command("objy ListStorage -noTitle -bootfile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+        pass        
+
+
     def ig3_command(self,command):
         if platform.system().lower().startswith("darwin"):
             return "(export DYLD_LIBRARY_PATH=%s;%s)"%(os.path.join(self.config.IG3_Root,"lib"),command)
         return "(export LD_LIBRARY_PATH=%s;%s)"%(os.path.join(self.config.IG3_Root,"lib"),command)
     
-    def create_db_ig3(self,propertyFile):
-        command = self.ig3_command("java -jar %s -engine ig3 -operation create -property %s"%(self.ig3Jar,propertyFile.fileName))
-        return os.system(command)
+    def create_db_ig3(self,propertyFile,index):
+        command = self.ig3_command("java -jar %s -engine ig3 -operation create -property %s -index %s"%(self.ig3Jar,propertyFile.fileName,index))
+        return os_system(command)
             
 
     def run_ig_3(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew):
         propertyFile.properties["IG.BootFilePath"]=self.config.BootFilePath
         if isNew:
             if os.path.exists(os.path.join(self.config.BootFilePath,"bench.boot")):
-                os.system(self.ig3_command("objy DeleteFd -quiet -noTitle -bootFile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+                os_system(self.ig3_command("objy DeleteFd -quiet -noTitle -bootFile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
             locationConfig = IG_PropertyFile.IG_LocationConfigFile(os.path.join(self.config.BootFilePath,"Location.config"))
             locationConfig.generate(self.config.Disks)
             propertyFile.properties["IG.Placement.PreferenceRankFile"] = os.path.join(self.config.BootFilePath,"Location.config")
             propertyFile.generate()
-            self.create_db_ig3(propertyFile)
+            self.create_db_ig3(propertyFile,index)
             self.setup_IG3_Location(propertyFile)
             pass
         command = "java -jar %s -engine ig3 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s"%(self.ig3Jar,
@@ -99,10 +162,9 @@ class Runner:
                                                                                                                      vthreads,txsize,
                                                                                                                      index)  
         command = self.ig3_command(command)
-        return os.system(command)
+        return os_system(command)
 
-    def setup_IG3_Location(self,propertyFile):
-        
+    def setup_IG3_Location(self,propertyFile):        
         counter = 1
         for disk in self.config.Disks:
             command = self.ig3_command("objy AddStorageLocation -quiet -noTitle -name %s -storageLocation %s::%s -bootfile %s"%(
@@ -110,33 +172,60 @@ class Runner:
                 disk.host,
                 disk.device,
                 os.path.join(self.config.BootFilePath,"bench.boot")))
-            os.system(command)
+            os_system(command)
             counter += 1
             pass
-        #os.system(self.ig3_command("objy ListStorage -noTitle -bootfile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+        #os_system(self.ig3_command("objy ListStorage -noTitle -bootfile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
         pass
         
+    def line(self):
+        return "------------------------------------------------------------------------------------------------------------------------------"
     
-    def v_ingest_f_tx(self,igPropertyFile,sizes):
-        cwd  = os.getcwd()
-        path = self.createResultsPath("v_ingest_f_tx")
-        self.cleanResultsPath(path)
-        os.chdir(path)
-        print "\n------------------------------------------------------------------------------------------------------------------------------"
-        print "Vertex Ingest Rate as a function of Transaction Size"
-        print "------------------------------------------------------------------------------------------------------------------------------"
+
+    def v_ingest_f_tx_ig2(self,igPropertyFile,sizes,index="none"):
+      
         counter = 1
         total = len(sizes)
         for size in sizes:
             scale = size[0]
             txsize = size[1]
-            print >> sys.stdout,"\t[%d/%d]"%(counter,total),
+            print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
             sys.stdout.flush()
             counter += 1
-            self.run_ig_3("standard_ingest",scale,igPropertyFile,1,1,txsize,"none",1)
+            self.run_ig_2("standard_ingest",scale,igPropertyFile,1,1,txsize,index,1)
             pass
-        print "------------------------------------------------------------------------------------------------------------------------------"
+        print
+        pass
+    
+    def v_ingest_f_tx_ig3(self,igPropertyFile,sizes,index="none"):
+        counter = 1
+        total = len(sizes)
+        for size in sizes:
+            scale = size[0]
+            txsize = size[1]
+            print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
+            sys.stdout.flush()
+            counter += 1
+            self.run_ig_3("standard_ingest",scale,igPropertyFile,1,1,txsize,index,1)
+            pass
+        print
+        pass
+    
+    def v_ingest_f_tx(self,igPropertyFile,sizes,index="none"):
+        cwd  = os.getcwd()
+        path = self.createResultsPath("v_ingest_f_tx")
+        self.cleanResultsPath(path)
+        os.chdir(path)
+        print "\n",self.line()
+        if index == "none":
+            print hilite("Vertex Ingest Rate as a function of Transaction Size",0,True)
+        else:
+            print hilite("Indexed Vertex Ingest Rate as a function of Transaction Size",0,True)
+            pass        
+        self.v_ingest_f_tx_ig2(igPropertyFile,sizes,index)
+        self.v_ingest_f_tx_ig3(igPropertyFile,sizes,index)
         os.chdir(cwd)
+        print self.line()
         pass
         
 
