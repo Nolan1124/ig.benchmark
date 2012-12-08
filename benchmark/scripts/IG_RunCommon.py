@@ -50,11 +50,13 @@ class Runner:
         #print "IG2 :",self.ig2Jar
         #print "IG3 :",self.ig3Jar
         #print "Results:",self.rootResultsPath
-        if os_system("oocheckls -quiet") != 0:
-            print >> sys.stderr,"ERROR: Lock server is not running."
-            return False
-        else:
-            #   print "Lock server is running on local host"
+        if 0:
+            if os_system("oocheckls -quiet") != 0:
+                print >> sys.stderr,"ERROR: Lock server is not running."
+                return False
+            else:
+                #   print "Lock server is running on local host"
+                pass
             pass
         return True
 
@@ -114,7 +116,7 @@ class Runner:
                                                                                                                      propertyFile.fileName,
                                                                                                                      threads,
                                                                                                                      vthreads,txsize,
-                                                                                                                     index)  
+                                                                                                                     index)
         command = self.ig2_command(command)
         return os_system(command)
 
@@ -183,7 +185,6 @@ class Runner:
     
 
     def v_ingest_f_tx_ig2(self,igPropertyFile,sizes,index="none"):
-      
         counter = 1
         total = len(sizes)
         for size in sizes:
@@ -210,10 +211,86 @@ class Runner:
             pass
         print
         pass
+
+
+    def v_ingest_ig2(self,igPropertyFile,sizes,index,threads,page_sizes):
+        counter = 1
+        total = len(sizes) * len(threads) * len(page_sizes)
+        for page_size in page_sizes:
+            igPropertyFile.properties["IG.PageSize"] = page_size
+            for size in sizes:
+                scale = size[0]
+                txsize = size[1]
+                for thread in threads:
+                    print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
+                    sys.stdout.flush()
+                    self.run_ig_2("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,1)
+                    counter += 1
+                    pass
+                pass
+            pass
+        print
+        pass
     
-    def v_ingest_f_tx(self,igPropertyFile,sizes,index="none"):
+    def v_ingest_ig3(self,igPropertyFile,sizes,index,threads,page_sizes):
+        counter = 1
+        total = len(sizes) * len(threads) * len(page_sizes)
+        for page_size in page_sizes:
+            igPropertyFile.properties["IG.PageSize"] = page_size
+            for size in sizes:
+                scale = size[0]
+                txsize = size[1]
+                for thread in threads:
+                    print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,
+                                                                                                 total,
+                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
+                    sys.stdout.flush()
+                    self.run_ig_3("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,1)
+                    counter += 1
+                    pass
+                pass
+        print
+        pass
+    
+    def v_ingest_f_threads_ig2(self,igPropertyFile,sizes,index,threads):
+        counter = 1
+        total = len(sizes) * len(threads)
+        for size in sizes:
+            scale = size[0]
+            txsize = size[1]
+            for thread in threads:
+                print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
+                sys.stdout.flush()
+                self.run_ig_2("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,1)
+                counter += 1
+            pass
+        print
+        pass
+    
+    def v_ingest_f_threads_ig3(self,igPropertyFile,sizes,index,threads):
+        counter = 1
+        total = len(sizes) * len(threads)
+        for size in sizes:
+            scale = size[0]
+            txsize = size[1]
+            for thread in threads:
+                print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
+                sys.stdout.flush()
+                self.run_ig_3("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,1)
+                counter += 1
+            pass
+        print
+        pass
+
+    
+    def v_ingest_f_tx(self,igPropertyFile,sizes,index,threads,page_sizes):
         cwd  = os.getcwd()
-        path = self.createResultsPath("v_ingest_f_tx")
+        path = None
+        if index == "none":
+            path = self.createResultsPath("v.ingest.f_tx")
+        else:
+            path = self.createResultsPath("v.ingest.index.f_tx")
         self.cleanResultsPath(path)
         os.chdir(path)
         print "\n",self.line()
@@ -221,13 +298,74 @@ class Runner:
             print hilite("Vertex Ingest Rate as a function of Transaction Size",0,True)
         else:
             print hilite("Indexed Vertex Ingest Rate as a function of Transaction Size",0,True)
-            pass        
-        self.v_ingest_f_tx_ig2(igPropertyFile,sizes,index)
-        self.v_ingest_f_tx_ig3(igPropertyFile,sizes,index)
+            pass
+        self.v_ingest_ig2(igPropertyFile,sizes,index,threads,page_sizes)
+        self.v_ingest_ig3(igPropertyFile,sizes,index,threads,page_sizes)
         os.chdir(cwd)
         print self.line()
         pass
-        
+
+    def v_ingest(self,title,dependentVariables,igPropertyFile,sizes,index,threads,page_sizes):
+        path = None
+        for index_type in index:
+            cwd  = os.getcwd()
+            dir_name = "v.ingest.index_%s.f"%(index_type)
+            for dep_var in dependentVariables:
+                dir_name += "_%s_"%(dep_var)
+                pass
+            path = self.createResultsPath(dir_name)
+            self.cleanResultsPath(path)
+            os.chdir(path)
+            print "\n",self.line()
+            print hilite("%s [Index:%s]"%(title,index_type),0,True)
+            self.v_ingest_ig2(igPropertyFile,sizes,index_type,threads,page_sizes)
+            self.v_ingest_ig3(igPropertyFile,sizes,index_type,threads,page_sizes)
+            os.chdir(cwd)
+            print self.line()
+            pass
+        pass
+
+    def v_ingest_f_threads(self,igPropertyFile,sizes,index,threads):
+        cwd  = os.getcwd()
+        path = None
+        if index == "none":
+            path = self.createResultsPath("v_ingest_f_threads")
+        else:
+            path = self.createResultsPath("v_ingest_index_f_threads")
+        self.cleanResultsPath(path)
+        os.chdir(path)
+        print "\n",self.line()
+        if index == "none":
+            print hilite("Vertex Ingest Rate as a function of Threads",0,True)
+        else:
+            print hilite("Indexed Vertex Ingest Rate as a function of Threads",0,True)
+            pass        
+        self.v_ingest_f_threads_ig2(igPropertyFile,sizes,index,threads)
+        self.v_ingest_f_threads_ig3(igPropertyFile,sizes,index,threads)
+        os.chdir(cwd)
+        print self.line()
+        pass
+
+    def v_ingest_f_page_size(self,igPropertyFile,sizes,index,threads,page_size):
+        cwd  = os.getcwd()
+        path = None
+        if index == "none":
+            path = self.createResultsPath("v.ingest.f_page_size")
+        else:
+            path = self.createResultsPath("v.ingest.index.f_page_size")
+        self.cleanResultsPath(path)
+        os.chdir(path)
+        print "\n",self.line()
+        if index == "none":
+            print hilite("Vertex Ingest Rate as a function of page size",0,True)
+        else:
+            print hilite("Indexed Vertex Ingest Rate as a function of page size",0,True)
+            pass        
+        self.v_ingest_ig2(igPropertyFile,sizes,index,threads,page_size)
+        self.v_ingest_ig3(igPropertyFile,sizes,index,threads,page_size)
+        os.chdir(cwd)
+        print self.line()
+        pass
 
 def r_mkdir(path,pathList):
     if len(pathList) == 0:
