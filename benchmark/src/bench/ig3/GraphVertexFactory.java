@@ -14,7 +14,7 @@ public class GraphVertexFactory extends VertexFactory
 
     public Object createIndex(GraphDatabase graphDB) throws Exception
     {
-        IndexManager.addGraphIndex("vertexGraphIndex", bench.ig3.Vertex.class.getName(), new String[] {"key"}, true);
+        IndexManager.addGraphIndex("vertexGraphIndex", bench.ig3.Vertex.class.getName(), new String[] {"value"}, true);
         return null;
     }
 
@@ -25,7 +25,7 @@ public class GraphVertexFactory extends VertexFactory
     
     public synchronized bench.ig3.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
     {
-        Query<bench.ig3.Vertex> query = graphDB.createQuery(bench.ig3.Vertex.class.getName(),String.format("key == %d",value));
+        Query<bench.ig3.Vertex> query = graphDB.createQuery(bench.ig3.Vertex.class.getName(),String.format("value == %d",value));
         return query.getSingleResult();
     }
     

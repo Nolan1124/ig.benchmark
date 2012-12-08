@@ -9,6 +9,7 @@ from collections import deque
 
 import IG_PropertyFile
 import IG_Config
+import random
 
 def os_system(command):
     #print command
@@ -101,7 +102,7 @@ class Runner:
         command = self.ig2_command("java -jar %s -engine ig2 -operation create -property %s -index %s"%(self.ig2Jar,propertyFile.fileName,index))
         return os_system(command)
     
-    def run_ig_2(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew):
+    def run_ig_2(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew,block=0,searchList=None):
         propertyFile.properties["IG.BootFilePath"]=self.config.BootFilePath
         if isNew:
             if os.path.exists(os.path.join(self.config.BootFilePath,"bench.boot")):
@@ -111,12 +112,16 @@ class Runner:
             propertyFile.generate()
             self.create_db_ig2(propertyFile,index)
             pass
-        command = "java -jar %s -engine ig2 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s"%(self.ig2Jar,
-                                                                                                                     operation,scale,
-                                                                                                                     propertyFile.fileName,
-                                                                                                                     threads,
-                                                                                                                     vthreads,txsize,
-                                                                                                                     index)
+        command = "java -jar %s -engine ig2 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s -block %d "%(self.ig2Jar,
+                                                                                                                               operation,scale,
+                                                                                                                               propertyFile.fileName,
+                                                                                                                               threads,
+                                                                                                                               vthreads,txsize,
+                                                                                                                               index,
+                                                                                                                               block
+                                                                                                                               )
+        if searchList:
+            command += "-searchlist %s "%(searchList) 
         command = self.ig2_command(command)
         return os_system(command)
 
@@ -145,11 +150,12 @@ class Runner:
         return os_system(command)
             
 
-    def run_ig_3(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew):
+    def run_ig_3(self,operation,scale,propertyFile,threads,vthreads,txsize,index,isNew,block=0,searchList=None):
         propertyFile.properties["IG.BootFilePath"]=self.config.BootFilePath
         if isNew:
             if os.path.exists(os.path.join(self.config.BootFilePath,"bench.boot")):
                 os_system(self.ig3_command("objy DeleteFd -quiet -noTitle -bootFile %s"%(os.path.join(self.config.BootFilePath,"bench.boot"))))
+                pass
             locationConfig = IG_PropertyFile.IG_LocationConfigFile(os.path.join(self.config.BootFilePath,"Location.config"))
             locationConfig.generate(self.config.Disks)
             propertyFile.properties["IG.Placement.PreferenceRankFile"] = os.path.join(self.config.BootFilePath,"Location.config")
@@ -157,12 +163,17 @@ class Runner:
             self.create_db_ig3(propertyFile,index)
             self.setup_IG3_Location(propertyFile)
             pass
-        command = "java -jar %s -engine ig3 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s"%(self.ig3Jar,
-                                                                                                                     operation,scale,
-                                                                                                                     propertyFile.fileName,
-                                                                                                                     threads,
-                                                                                                                     vthreads,txsize,
-                                                                                                                     index)  
+        command = "java -jar %s -engine ig3 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s -block %d "%(self.ig3Jar,
+                                                                                                                               operation,scale,
+                                                                                                                               propertyFile.fileName,
+                                                                                                                               threads,
+                                                                                                                               vthreads,txsize,
+                                                                                                                               index,
+                                                                                                                               block)
+        if searchList:
+            command += "-searchlist %s "%(searchList)
+            pass
+        
         command = self.ig3_command(command)
         return os_system(command)
 
@@ -184,35 +195,7 @@ class Runner:
         return "------------------------------------------------------------------------------------------------------------------------------"
     
 
-    def v_ingest_f_tx_ig2(self,igPropertyFile,sizes,index="none"):
-        counter = 1
-        total = len(sizes)
-        for size in sizes:
-            scale = size[0]
-            txsize = size[1]
-            print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
-            sys.stdout.flush()
-            counter += 1
-            self.run_ig_2("standard_ingest",scale,igPropertyFile,1,1,txsize,index,1)
-            pass
-        print
-        pass
-    
-    def v_ingest_f_tx_ig3(self,igPropertyFile,sizes,index="none"):
-        counter = 1
-        total = len(sizes)
-        for size in sizes:
-            scale = size[0]
-            txsize = size[1]
-            print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
-            sys.stdout.flush()
-            counter += 1
-            self.run_ig_3("standard_ingest",scale,igPropertyFile,1,1,txsize,index,1)
-            pass
-        print
-        pass
-
-
+   
     def v_ingest_ig2(self,igPropertyFile,sizes,index,threads,page_sizes):
         counter = 1
         total = len(sizes) * len(threads) * len(page_sizes)
@@ -252,59 +235,68 @@ class Runner:
                 pass
         print
         pass
-    
-    def v_ingest_f_threads_ig2(self,igPropertyFile,sizes,index,threads):
+
+    def generate_random_searchlist(self,fileName,randomGenerator,size,graphSize):
+        searchListFile = file(fileName,"w")
+        for i in xrange(size):
+            print >> searchListFile,randomGenerator.randint(0,graphSize)
+        searchListFile.flush()
+        searchListFile.close()
+        
+
+    def v_search_ig2(self,igPropertyFile,scale,size_counter,txsize,index,threads,page_sizes,
+                     search_size,search_seed):
         counter = 1
-        total = len(sizes) * len(threads)
-        for size in sizes:
-            scale = size[0]
-            txsize = size[1]
-            for thread in threads:
-                print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
-                sys.stdout.flush()
-                self.run_ig_2("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,1)
-                counter += 1
-            pass
-        print
-        pass
-    
-    def v_ingest_f_threads_ig3(self,igPropertyFile,sizes,index,threads):
-        counter = 1
-        total = len(sizes) * len(threads)
-        for size in sizes:
-            scale = size[0]
-            txsize = size[1]
-            for thread in threads:
-                print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d]"%(counter,total),1,False),
-                sys.stdout.flush()
-                self.run_ig_3("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,1)
-                counter += 1
+        total = size_counter * len(threads) * len(page_sizes)
+        random.seed(search_seed)
+        for page_size in page_sizes:
+            igPropertyFile.properties["IG.PageSize"] = page_size
+            for block in xrange(0,size_counter):
+                for thread in threads:
+                    print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
+                    sys.stdout.flush()
+                    self.run_ig_2("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,(block == 0),block)
+                    graphSize = pow(2,scale) * (block+1)
+                    print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
+                    sys.stdout.flush()
+                    self.generate_random_searchlist("searchlist.data",random,search_size,graphSize)
+                    self.run_ig_2("search",scale,igPropertyFile,thread,thread,txsize,index,False,0,"searchlist.data")
+                    counter += 1
+                    pass
+                pass
             pass
         print
         pass
 
-    
-    def v_ingest_f_tx(self,igPropertyFile,sizes,index,threads,page_sizes):
-        cwd  = os.getcwd()
-        path = None
-        if index == "none":
-            path = self.createResultsPath("v.ingest.f_tx")
-        else:
-            path = self.createResultsPath("v.ingest.index.f_tx")
-        self.cleanResultsPath(path)
-        os.chdir(path)
-        print "\n",self.line()
-        if index == "none":
-            print hilite("Vertex Ingest Rate as a function of Transaction Size",0,True)
-        else:
-            print hilite("Indexed Vertex Ingest Rate as a function of Transaction Size",0,True)
+    def v_search_ig3(self,igPropertyFile,scale,size_counter,txsize,index,threads,page_sizes,
+                     search_size,search_seed):
+        counter = 1
+        total = size_counter * len(threads) * len(page_sizes)
+        random.seed(search_seed)
+        for page_size in page_sizes:
+            igPropertyFile.properties["IG.PageSize"] = page_size
+            for block in xrange(0,size_counter):
+                for thread in threads:
+                    print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
+                    sys.stdout.flush()
+                    self.run_ig_3("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,(block == 0),block)
+                    graphSize = pow(2,scale) * (block+1)
+                    print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
+                    sys.stdout.flush()
+                    self.generate_random_searchlist("searchlist.data",random,search_size,graphSize)
+                    self.run_ig_3("search",scale,igPropertyFile,thread,thread,txsize,index,False,0,"searchlist.data")
+                    counter += 1
+                    pass
+                pass
             pass
-        self.v_ingest_ig2(igPropertyFile,sizes,index,threads,page_sizes)
-        self.v_ingest_ig3(igPropertyFile,sizes,index,threads,page_sizes)
-        os.chdir(cwd)
-        print self.line()
+        print
         pass
-
+    
+    
     def v_ingest(self,title,dependentVariables,igPropertyFile,sizes,index,threads,page_sizes):
         path = None
         for index_type in index:
@@ -325,47 +317,41 @@ class Runner:
             pass
         pass
 
-    def v_ingest_f_threads(self,igPropertyFile,sizes,index,threads):
-        cwd  = os.getcwd()
+    def v_search(self,title,dependentVariables,igPropertyFile,
+                 scale,size_counter,
+                 txsize,
+                 index,threads,page_sizes,search_size,search_seed):
         path = None
-        if index == "none":
-            path = self.createResultsPath("v_ingest_f_threads")
-        else:
-            path = self.createResultsPath("v_ingest_index_f_threads")
-        self.cleanResultsPath(path)
-        os.chdir(path)
-        print "\n",self.line()
-        if index == "none":
-            print hilite("Vertex Ingest Rate as a function of Threads",0,True)
-        else:
-            print hilite("Indexed Vertex Ingest Rate as a function of Threads",0,True)
-            pass        
-        self.v_ingest_f_threads_ig2(igPropertyFile,sizes,index,threads)
-        self.v_ingest_f_threads_ig3(igPropertyFile,sizes,index,threads)
-        os.chdir(cwd)
-        print self.line()
+        for index_type in index:
+            cwd  = os.getcwd()
+            dir_name = "v.search.index_%s.f"%(index_type)
+            for dep_var in dependentVariables:
+                dir_name += "_%s_"%(dep_var)
+                pass
+            path = self.createResultsPath(dir_name)
+            self.cleanResultsPath(path)
+            os.chdir(path)
+            print "\n",self.line()
+            print hilite("%s [Index:%s]"%(title,index_type),0,True)
+            self.v_search_ig2(igPropertyFile,
+                              scale,size_counter,
+                              txsize,
+                              index_type,threads,page_sizes,search_size,search_seed)
+
+            self.v_search_ig3(igPropertyFile,
+                              scale,size_counter,
+                              txsize,
+                              index_type,threads,page_sizes,search_size,search_seed)
+
+            #self.v_search_ig3(igPropertyFile,
+            #                  size_increment,size_counter,
+            #                  tzsize,
+            #                  index_type,threads,page_sizes,search_size,search_seed)
+            os.chdir(cwd)
+            print self.line()
+            pass
         pass
 
-    def v_ingest_f_page_size(self,igPropertyFile,sizes,index,threads,page_size):
-        cwd  = os.getcwd()
-        path = None
-        if index == "none":
-            path = self.createResultsPath("v.ingest.f_page_size")
-        else:
-            path = self.createResultsPath("v.ingest.index.f_page_size")
-        self.cleanResultsPath(path)
-        os.chdir(path)
-        print "\n",self.line()
-        if index == "none":
-            print hilite("Vertex Ingest Rate as a function of page size",0,True)
-        else:
-            print hilite("Indexed Vertex Ingest Rate as a function of page size",0,True)
-            pass        
-        self.v_ingest_ig2(igPropertyFile,sizes,index,threads,page_size)
-        self.v_ingest_ig3(igPropertyFile,sizes,index,threads,page_size)
-        os.chdir(cwd)
-        print self.line()
-        pass
 
 def r_mkdir(path,pathList):
     if len(pathList) == 0:

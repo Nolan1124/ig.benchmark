@@ -31,38 +31,25 @@ public class FindVertex extends IGOperation
         this.counter = 0;
         boolean done = false;
         long elementsFound = 0;
+       
         while(!done)
         {
-            List<LongPair> edgePairList = this.dataSource.getNextSearchPair(this.operationsPerTransaction);
-            int size = edgePairList.size();
+            List<Long> searchList = this.dataSource.getNextSearchList(this.operationsPerTransaction);
+            int size = searchList.size();
             if(size > 0)
             {
                 this.createReadTransaction();
-                for(LongPair edgePair:edgePairList)
+                for(Long vertexID:searchList)
                 {
-                    long first = edgePair.getFirst();
-                    long second = edgePair.getSecond();
-                    Vertex firstVertex = vertexFactory.findObject(this.graphDB,indexManager,first);
-                    Vertex secondVertex = vertexFactory.findObject(this.graphDB,indexManager,second);
-                    this.counter += 2;
-                    if(firstVertex != null)
+            
+                    Vertex vertex = vertexFactory.findObject(this.graphDB,indexManager,vertexID);
+                    this.counter += 1;
+                    if(vertex != null)
                         elementsFound++;
-                    if(secondVertex != null)
-                        elementsFound++;
-                    
-                    if(this.results != null)
-                    {
-                        if(firstVertex != null)
-                        {
-                            if(secondVertex != null)
-                            {
-                                this.results.add(new LongPair(firstVertex.getId(),secondVertex.getId()));
-                            }
-                        }
-                    }
                 }
                 this.commitTransaction();
-                System.out.printf("\t[%d] %s (%d/%d) \n",this.id,this.getName(),elementsFound,counter);
+                if(this.verboseLevel >= 2)
+                    System.out.printf("\t[%d] %s (%d/%d) \n",this.id,this.getName(),elementsFound,counter);
             }
             if(size < this.operationsPerTransaction)
             {

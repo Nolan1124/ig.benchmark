@@ -41,7 +41,7 @@ public class Reader extends IGOperation
         while(read)
         {
             Vertex v = (Vertex)i.next();
-            long value = v.getKey();
+            long value = v.getValue();
             Iterable<VertexHandle> neighbors = v.getNeighbors();
             if(this.results != null)
             {
@@ -52,7 +52,7 @@ public class Reader extends IGOperation
                 for(VertexHandle n:neighbors)
                 {
                     Vertex nv = (Vertex)n.getVertex();
-                    long nValue = nv.getKey();
+                    long nValue = nv.getValue();
                     this.counter++;
                 }
             }

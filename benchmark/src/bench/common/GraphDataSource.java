@@ -29,6 +29,7 @@ public class GraphDataSource
     
     public boolean initialize() throws FileNotFoundException
     {
+        
         if(edgeListPath != null)
             this.edgeListReader = new BufferedReader(new FileReader(edgeListPath));
         if(searchListPath != null)
@@ -93,6 +94,30 @@ public class GraphDataSource
         }
         return edgePair;
     }
+
+
+    public Long getNextVertexID(BufferedReader reader)
+    {
+        Long vertexID = null;
+        try
+        {
+            String line = reader.readLine();
+            if(line != null)
+            {
+                long id  = Long.parseLong(line);
+                vertexID = new Long(id);
+            }
+        }
+        catch (java.io.EOFException e)
+        {
+            return null;
+        }
+        catch (java.io.IOException ioe)
+        {
+            return null;
+        }
+        return vertexID;
+    }
     
     public synchronized List<LongPair> getNextEdgePair(int size)
     {
@@ -116,25 +141,25 @@ public class GraphDataSource
     }
     
     
-    public synchronized List<LongPair> getNextSearchPair(int size)
+    public synchronized List<Long> getNextSearchList(int size)
     {
-        List<LongPair> edgePairContainer = new ArrayList<LongPair>();
-        if(searchListReader == null)
+        List<Long> searchContainer = new ArrayList<Long>();
+        if(searchListReader != null)
         {
             int counter = 0;
             boolean done = false;
             while(!done)
             {
-                LongPair edgePair = this.getNextPair(searchListReader);
-                if((edgePair != null) && (edgePair.getFirst() != edgePair.getSecond()))
+                Long vertexID = this.getNextVertexID(searchListReader);
+                if(vertexID != null)
                 {
-                    edgePairContainer.add(edgePair);
+                    searchContainer.add(vertexID);
                     counter += 1;
                 }
-                done = (counter >= size) || (edgePair == null);
+                done = (counter >= size) || (vertexID == null);
             }
         }
-        return edgePairContainer;
+        return searchContainer;
     }
     
 }

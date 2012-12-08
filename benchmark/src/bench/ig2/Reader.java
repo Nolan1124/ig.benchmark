@@ -39,7 +39,7 @@ public class Reader extends IGOperation
         this.counter = 0;
         while(read){
             Vertex v = (Vertex)i.next();
-            long value = v.getKey();
+            long value = v.getValue();
             Iterable<VertexHandle> neighbors = v.getNeighbors();
             if(this.results != null){
                 this.results.add(new LongPair(v.getId(),0));
@@ -47,7 +47,7 @@ public class Reader extends IGOperation
             else{
                 for(VertexHandle n:neighbors){
                     Vertex nv = (Vertex)n.getVertex();
-                    long nValue = nv.getKey();
+                    long nValue = nv.getValue();
                     this.counter++;
                 }
             }

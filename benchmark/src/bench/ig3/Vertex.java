@@ -3,22 +3,22 @@ package bench.ig3;
 import com.infinitegraph.BaseVertex;
 public class Vertex extends BaseVertex
 {
-    private long key;
+    private long value;
     public Vertex(long value)
     {
-        setKey(value);
+        setValue(value);
     }
 
-    public void setKey(long value)
+    public void setValue(long value)
     {
         markModified();
-        this.key = value;
+        this.value = value;
     }
 
-    public long getKey()
+    public long getValue()
     {
         fetch();
-        return this.key;
+        return this.value;
     }
 
 }
