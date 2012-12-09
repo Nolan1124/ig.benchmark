@@ -1,0 +1,12 @@
+{"time":320,"threads":1,"opsize":256,"rate":800.00,"txsize":16,"index":"Graph","size":256}
+{"time":371,"threads":1,"opsize":512,"rate":1380.05,"txsize":32,"index":"Graph","size":512}
+{"time":471,"threads":1,"opsize":1024,"rate":2174.10,"txsize":64,"index":"Graph","size":1024}
+{"time":587,"threads":1,"opsize":2048,"rate":3488.93,"txsize":128,"index":"Graph","size":2048}
+{"time":759,"threads":1,"opsize":4096,"rate":5396.57,"txsize":256,"index":"Graph","size":4096}
+{"time":1017,"threads":1,"opsize":8192,"rate":8055.06,"txsize":512,"index":"Graph","size":8192}
+{"time":1463,"threads":1,"opsize":16384,"rate":11198.91,"txsize":1024,"index":"Graph","size":16384}
+{"time":2131,"threads":1,"opsize":32768,"rate":15376.82,"txsize":2048,"index":"Graph","size":32768}
+{"time":3249,"threads":1,"opsize":65536,"rate":20171.13,"txsize":4096,"index":"Graph","size":65536}
+{"time":4478,"threads":1,"opsize":131072,"rate":29270.21,"txsize":8192,"index":"Graph","size":131072}
+{"time":8499,"threads":1,"opsize":262144,"rate":30844.10,"txsize":16384,"index":"Graph","size":262144}
+{"time":16357,"threads":1,"opsize":524288,"rate":32052.82,"txsize":32768,"index":"Graph","size":524288}
