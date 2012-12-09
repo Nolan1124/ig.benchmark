@@ -372,11 +372,15 @@ class Runner:
                               txsize,
                               index_type,ingest_threads,search_threads,page_sizes,search_size,search_seed)
 
+            self.generate_plot(dependentVariables[0])
+ 
             self.v_search_ig3(igPropertyFile,
                               scale,size_counter,
                               txsize,
                               index_type,ingest_threads,search_threads,page_sizes,search_size,search_seed)
 
+            self.generate_plot(dependentVariables[0])
+ 
             #self.v_search_ig3(igPropertyFile,
             #                  size_increment,size_counter,
             #                  tzsize,

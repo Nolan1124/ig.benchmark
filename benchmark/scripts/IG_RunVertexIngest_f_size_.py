@@ -10,7 +10,7 @@ sizes = []
 page_size = [16384]
 threads = [4]
 index = ["none","gr"]
-for scale in range(16,26):
+for scale in range(16,28):
     sizes.append((scale,pow(2,14)))
 runner.v_ingest("Vertex Ingest Rate as a function of size (time)",["size"],propertyFile,sizes,index,threads,page_size)
 
