@@ -17,7 +17,8 @@ public class ProfileEvent{
     
     public void save(String name,int threads,long txSize,String indexType,long databaseSize) throws Exception
     {
-        String fileName = String.format("%s.profile",name);
+        String osType= System.getProperty("os.name").replace(' ','_').toLowerCase();
+        String fileName = String.format("%s.%s.profile",osType,name);
         PrintWriter writer =  new PrintWriter(new FileWriter(fileName,true));
         writer.println(this.format(threads,txSize,indexType,databaseSize));
         writer.flush();

@@ -311,12 +311,12 @@ class Runner:
         print
         pass
 
-    def generate_plot(self,variable):
+    def generate_plot(self,variable,iVars = None):
         listing = os.listdir(".")
         for i in listing:
             if i.endswith(".profile"):
                 outputFileName = "%s_f_%s.data"%(i,variable)
-                GeneratePlot.generate_rate(i,variable,outputFileName)
+                GeneratePlot.generate_rate(i,variable,outputFileName,iVars)
                 pass
             pass
         pass
@@ -334,10 +334,15 @@ class Runner:
             os.chdir(path)
             print "\n",self.line()
             print hilite("%s [Index:%s]"%(title,index_type),0,True)
+
+            iVar = None
+            if dependentVariables[0] == "page_size":
+                iVar = page_sizes
+                pass
             self.v_ingest_ig2(igPropertyFile,sizes,index_type,threads,page_sizes)
-            self.generate_plot(dependentVariables[0])
+            self.generate_plot(dependentVariables[0],iVar)
             self.v_ingest_ig3(igPropertyFile,sizes,index_type,threads,page_sizes)
-            self.generate_plot(dependentVariables[0])
+            self.generate_plot(dependentVariables[0],iVar)
             os.chdir(cwd)
             print self.line()
             pass
