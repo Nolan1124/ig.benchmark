@@ -13,7 +13,7 @@ index = ["gr"]
 search_size = pow(2,14)
 search_seed = 0
 scale = 19
-size_counter = 10
+size_counter = 100
 txsize = pow(2,14)
 
 runner.v_search("Vertex Search Rate as a function of size (search size:%d)"%(txsize),
