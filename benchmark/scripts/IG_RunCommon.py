@@ -11,6 +11,8 @@ import IG_PropertyFile
 import IG_Config
 import random
 
+import GeneratePlot
+
 def os_system(command):
     #print command
     os.system(command)
@@ -48,9 +50,7 @@ class Runner:
         if not os.path.exists(self.rootResultsPath):
             os.mkdir(self.rootResultsPath)
             pass
-        #print "IG2 :",self.ig2Jar
-        #print "IG3 :",self.ig3Jar
-        #print "Results:",self.rootResultsPath
+       
         if 0:
             if os_system("oocheckls -quiet") != 0:
                 print >> sys.stderr,"ERROR: Lock server is not running."
@@ -112,16 +112,22 @@ class Runner:
             propertyFile.generate()
             self.create_db_ig2(propertyFile,index)
             pass
-        command = "java -jar %s -engine ig2 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s -block %d "%(self.ig2Jar,
-                                                                                                                               operation,scale,
-                                                                                                                               propertyFile.fileName,
-                                                                                                                               threads,
-                                                                                                                               vthreads,txsize,
-                                                                                                                               index,
-                                                                                                                               block
-                                                                                                                               )
+        command = "java -jar %s -engine ig2 -operation %s -property %s -t %d -vit %d -tsize %d -index %s -block %d "%(self.ig2Jar,
+                                                                                                                      operation,
+                                                                                                                      propertyFile.fileName,
+                                                                                                                      threads,
+                                                                                                                      vthreads,txsize,
+                                                                                                                      index,
+                                                                                                                      block
+                                                                                                                      )
+        if operation == "search":
+            command += " -size %d "%((block+1)*pow(2,scale))
+        else:
+            command += " -scale %d "%(scale)
+            pass
         if searchList:
-            command += "-searchlist %s "%(searchList) 
+            command += "-searchlist %s "%(searchList)
+        
         command = self.ig2_command(command)
         return os_system(command)
 
@@ -163,13 +169,18 @@ class Runner:
             self.create_db_ig3(propertyFile,index)
             self.setup_IG3_Location(propertyFile)
             pass
-        command = "java -jar %s -engine ig3 -operation %s -scale %d -property %s -t %d -vit %d -tsize %d -index %s -block %d "%(self.ig3Jar,
-                                                                                                                               operation,scale,
-                                                                                                                               propertyFile.fileName,
-                                                                                                                               threads,
-                                                                                                                               vthreads,txsize,
-                                                                                                                               index,
-                                                                                                                               block)
+        command = "java -jar %s -engine ig3 -operation %s -property %s -t %d -vit %d -tsize %d -index %s -block %d "%(self.ig3Jar,
+                                                                                                                      operation,
+                                                                                                                      propertyFile.fileName,
+                                                                                                                      threads,
+                                                                                                                      vthreads,txsize,
+                                                                                                                      index,
+                                                                                                                      block)
+        if operation == "search":
+            command += " -size %d "%((block+1)*pow(2,scale))
+        else:
+            command += " -scale %d "%(scale)
+            pass
         if searchList:
             command += "-searchlist %s "%(searchList)
             pass
@@ -244,25 +255,27 @@ class Runner:
         searchListFile.close()
         
 
-    def v_search_ig2(self,igPropertyFile,scale,size_counter,txsize,index,threads,page_sizes,
+    def v_search_ig2(self,igPropertyFile,scale,size_counter,txsize,index,
+                     ingest_threads,search_threads,
+                     page_sizes,
                      search_size,search_seed):
         counter = 1
-        total = size_counter * len(threads) * len(page_sizes)
+        total = size_counter * len(search_threads) * len(page_sizes)
         random.seed(search_seed)
         for page_size in page_sizes:
             igPropertyFile.properties["IG.PageSize"] = page_size
             for block in xrange(0,size_counter):
-                for thread in threads:
-                    print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
-                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
-                    sys.stdout.flush()
-                    self.run_ig_2("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,(block == 0),block)
+                print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                             igPropertyFile.properties["IG.PageSize"]),1,False),
+                sys.stdout.flush()
+                self.run_ig_2("standard_ingest",scale,igPropertyFile,1,ingest_threads[0],txsize,index,(block == 0),block)
+                for thread in search_threads:    
                     graphSize = pow(2,scale) * (block+1)
                     print >> sys.stdout,hilite("\tIG 2.1",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
                                                                                                  igPropertyFile.properties["IG.PageSize"]),1,False),
                     sys.stdout.flush()
-                    self.generate_random_searchlist("searchlist.data",random,search_size,graphSize)
-                    self.run_ig_2("search",scale,igPropertyFile,thread,thread,txsize,index,False,0,"searchlist.data")
+                    self.generate_random_searchlist("searchlist.data",random,thread*search_size,graphSize)
+                    self.run_ig_2("search",scale,igPropertyFile,thread,ingest_threads[0],txsize,index,False,block,"searchlist.data")
                     counter += 1
                     pass
                 pass
@@ -270,32 +283,43 @@ class Runner:
         print
         pass
 
-    def v_search_ig3(self,igPropertyFile,scale,size_counter,txsize,index,threads,page_sizes,
+    def v_search_ig3(self,igPropertyFile,scale,size_counter,txsize,index,
+                     ingest_threads,search_threads,
+                     page_sizes,
                      search_size,search_seed):
         counter = 1
-        total = size_counter * len(threads) * len(page_sizes)
+        total = size_counter * len(search_threads) * len(page_sizes)
         random.seed(search_seed)
         for page_size in page_sizes:
             igPropertyFile.properties["IG.PageSize"] = page_size
             for block in xrange(0,size_counter):
-                for thread in threads:
-                    print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
-                                                                                                 igPropertyFile.properties["IG.PageSize"]),1,False),
-                    sys.stdout.flush()
-                    self.run_ig_3("standard_ingest",scale,igPropertyFile,thread,thread,txsize,index,(block == 0),block)
+                print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
+                                                                                             igPropertyFile.properties["IG.PageSize"]),1,False),
+                sys.stdout.flush()
+                self.run_ig_3("standard_ingest",scale,igPropertyFile,1,ingest_threads[0],txsize,index,(block == 0),block)
+                for thread in search_threads:
                     graphSize = pow(2,scale) * (block+1)
                     print >> sys.stdout,hilite("\tIG 3.0",1,1),hilite(" [%d/%d] [page_size:%d]"%(counter,total,
                                                                                                  igPropertyFile.properties["IG.PageSize"]),1,False),
                     sys.stdout.flush()
-                    self.generate_random_searchlist("searchlist.data",random,search_size,graphSize)
-                    self.run_ig_3("search",scale,igPropertyFile,thread,thread,txsize,index,False,0,"searchlist.data")
+                    self.generate_random_searchlist("searchlist.data",random,thread*search_size,graphSize)
+                    self.run_ig_3("search",scale,igPropertyFile,thread,ingest_threads[0],txsize,index,False,block,"searchlist.data")
                     counter += 1
                     pass
                 pass
             pass
         print
         pass
-    
+
+    def generate_plot(self,variable):
+        listing = os.listdir(".")
+        for i in listing:
+            if i.endswith(".profile"):
+                outputFileName = "%s_f_%s.data"%(i,variable)
+                GeneratePlot.generate_rate(i,variable,outputFileName)
+                pass
+            pass
+        pass
     
     def v_ingest(self,title,dependentVariables,igPropertyFile,sizes,index,threads,page_sizes):
         path = None
@@ -311,7 +335,9 @@ class Runner:
             print "\n",self.line()
             print hilite("%s [Index:%s]"%(title,index_type),0,True)
             self.v_ingest_ig2(igPropertyFile,sizes,index_type,threads,page_sizes)
+            self.generate_plot(dependentVariables[0])
             self.v_ingest_ig3(igPropertyFile,sizes,index_type,threads,page_sizes)
+            self.generate_plot(dependentVariables[0])
             os.chdir(cwd)
             print self.line()
             pass
@@ -320,7 +346,10 @@ class Runner:
     def v_search(self,title,dependentVariables,igPropertyFile,
                  scale,size_counter,
                  txsize,
-                 index,threads,page_sizes,search_size,search_seed):
+                 index,
+                 ingest_threads,
+                 search_threads,
+                 page_sizes,search_size,search_seed):
         path = None
         for index_type in index:
             cwd  = os.getcwd()
@@ -336,12 +365,12 @@ class Runner:
             self.v_search_ig2(igPropertyFile,
                               scale,size_counter,
                               txsize,
-                              index_type,threads,page_sizes,search_size,search_seed)
+                              index_type,ingest_threads,search_threads,page_sizes,search_size,search_seed)
 
             self.v_search_ig3(igPropertyFile,
                               scale,size_counter,
                               txsize,
-                              index_type,threads,page_sizes,search_size,search_seed)
+                              index_type,ingest_threads,search_threads,page_sizes,search_size,search_seed)
 
             #self.v_search_ig3(igPropertyFile,
             #                  size_increment,size_counter,
