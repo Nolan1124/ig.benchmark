@@ -1,0 +1,12 @@
+{"time":1161,"threads":4,"opsize":65536,"rate":56447.89,"txsize":16384,"index":"None","size":65536}
+{"time":1573,"threads":4,"opsize":131072,"rate":83326.13,"txsize":16384,"index":"None","size":131072}
+{"time":2999,"threads":4,"opsize":262144,"rate":87410.47,"txsize":16384,"index":"None","size":262144}
+{"time":5836,"threads":4,"opsize":524288,"rate":89836.87,"txsize":16384,"index":"None","size":524288}
+{"time":11746,"threads":4,"opsize":1048576,"rate":89270.90,"txsize":16384,"index":"None","size":1048576}
+{"time":23014,"threads":4,"opsize":2097152,"rate":91125.05,"txsize":16384,"index":"None","size":2097152}
+{"time":41410,"threads":4,"opsize":4194304,"rate":101287.23,"txsize":16384,"index":"None","size":4194304}
+{"time":85540,"threads":4,"opsize":8388608,"rate":98066.50,"txsize":16384,"index":"None","size":8388608}
+{"time":175089,"threads":4,"opsize":16777216,"rate":95821.07,"txsize":16384,"index":"None","size":16777216}
+{"time":348299,"threads":4,"opsize":33554432,"rate":96338.01,"txsize":16384,"index":"None","size":33554432}
+{"time":694052,"threads":4,"opsize":67108864,"rate":96691.41,"txsize":16384,"index":"None","size":67108864}
+{"time":1425719,"threads":4,"opsize":134217728,"rate":94140.38,"txsize":16384,"index":"None","size":134217728}

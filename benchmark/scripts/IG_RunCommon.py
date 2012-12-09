@@ -95,7 +95,7 @@ class Runner:
         if platform.system().lower().startswith("darwin"):
             return "(export DYLD_LIBRARY_PATH=%s;export PATH=%s:$PATH;%s)"%(os.path.join(self.config.IG2_Root,"lib"),
                                                                             os.path.join(self.config.IG2_Root,"bin"),command)
-        return "(export LD_LIBRARY_PATH=%s;export PATH=%s:$PATH;%s)"%(os.path.join(self.config.IG2_Root,"lib"),os.path.join(self.config.IG2_Root,bin),command)
+        return "(export LD_LIBRARY_PATH=%s;export PATH=%s:$PATH;%s)"%(os.path.join(self.config.IG2_Root,"lib"),os.path.join(self.config.IG2_Root,"bin"),command)
     
     
     def create_db_ig2(self,propertyFile,index):
