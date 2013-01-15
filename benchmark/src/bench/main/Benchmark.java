@@ -38,7 +38,8 @@ public class Benchmark
         final String dbMessage = String.format("Database name [default=%s].",AbstractBenchmark.DefaultDatabaseName);
         final String propertyMessage = String.format("file path of the property name [default=%s].",AbstractBenchmark.DefaultPropertyFile);
         final String serverMessage = String.format("server uri used for the rest-neo engine [default=%s].",AbstractBenchmark.DefaultServerURI);
-        final String verboseMessage = String.format("Verbose level (default:1");
+        final String verboseMessage = String.format("Verbose level (default:1)");
+        final String profileMessage = String.format("Profile file name");
         
         options.addOption(new Option("help",helpMessage));
         options.addOption(OptionBuilder.withArgName("integer").hasArg().withDescription(verboseMessage).create("verbose"));
@@ -59,6 +60,7 @@ public class Benchmark
         options.addOption(OptionBuilder.withArgName("string").hasArg().withDescription(propertyMessage).create("property"));
         options.addOption(OptionBuilder.withArgName("integer").hasArg().withDescription(limitMessage).create("limit"));
         options.addOption(OptionBuilder.withArgName("string").hasArg().withDescription(serverMessage).create("server"));
+        options.addOption(OptionBuilder.withArgName("string").hasArg().withDescription(profileMessage).create("profile"));
         options.addOption(new Option("uselocalmap",useLocalMapMessage));
         options.addOption(new Option("ascii","Use ascii format for edge and search list."));
     }
@@ -145,6 +147,7 @@ public class Benchmark
 
 
         dataSource.setBlock(block);
+        this.benchmark.setProfileFileName(this.commandLine.getOptionValue("profile"));
         this.benchmark.setVerboseLevel(verboseLevel);
         this.benchmark.setTransactionSize(tsize);
         this.benchmark.setGraphDataSource(dataSource);

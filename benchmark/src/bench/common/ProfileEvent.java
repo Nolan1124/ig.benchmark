@@ -2,6 +2,13 @@ package bench.common;
 import java.util.*;
 import java.io.*;
 
+
+import java.lang.Math;
+import java.util.*;
+import java.lang.management.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 public class ProfileEvent{
     private long startTime = 0;
     private long stopTime = 0;
@@ -15,28 +22,58 @@ public class ProfileEvent{
         this.running = true;
     }
     
-    public void save(String name,int threads,long txSize,String indexType,long databaseSize) throws Exception
+    public void save(String fileName,String name,int threads,long txSize,String indexType,long databaseSize) throws Exception
     {
         String osType= System.getProperty("os.name").replace(' ','_').toLowerCase();
-        String fileName = String.format("%s.%s.profile",osType,name);
+        //String fileName = String.format("%s.profile",name);
         PrintWriter writer =  new PrintWriter(new FileWriter(fileName,true));
-        writer.println(this.format(threads,txSize,indexType,databaseSize));
+        writer.println(this.format(osType,name,threads,txSize,indexType,databaseSize));
         writer.flush();
         writer.close();
     }
     
-    public String format(int threads,long txSize,String indexType,long databaseSize)
+    public String format(String osType,String operation,int threads,long txSize,String indexType,long databaseSize)
     {
-        return String.format("{\"time\":%d,\"threads\":%d,\"opsize\":%d,\"rate\":%.2f,\"txsize\":%d,\"index\":\"%s\",\"size\":%d}",
+        return String.format("{\"os\":\"%s\",\"operation\":\"%s\",\"time\":%d,\"threads\":%d,\"opsize\":%d,\"rate\":%.2f,\"txsize\":%d,\"index\":\"%s\",\"size\":%d,\"mem_init\":%2.0f,\"mem_used\":%2.0f,\"mem_committed\":%2.0f,\"mem_max\":%2.0f}",
+                             osType,
+                             operation,
                              this.getElapsedTime(),
                              threads,
                              this.getSize(),
                              this.getRate(),
                              txSize,
                              indexType,
-                             databaseSize
+                             databaseSize,
+                             ProfileEvent.GetMemoryUsageInit(),
+                             ProfileEvent.GetMemoryUsageUsed(),
+                             ProfileEvent.GetMemoryUsageCommitted(),
+                             ProfileEvent.GetMemoryUsageMax()
                              );
     }
+
+
+
+    private static MemoryMXBean memorymxBean;
+    static
+    {
+        ProfileEvent.memorymxBean = ManagementFactory.getMemoryMXBean();
+    }
+    public static double GetMemoryUsageInit(){
+        return (ProfileEvent.memorymxBean.getHeapMemoryUsage().getInit());
+    }
+    
+    public static double GetMemoryUsageUsed(){
+        return (ProfileEvent.memorymxBean.getHeapMemoryUsage().getUsed());
+    }
+    
+    public static double GetMemoryUsageCommitted(){
+        return (ProfileEvent.memorymxBean.getHeapMemoryUsage().getCommitted());
+    }
+    
+    public static double GetMemoryUsageMax(){
+        return (ProfileEvent.memorymxBean.getHeapMemoryUsage().getMax());
+    }
+
     
     public void stop()
     {

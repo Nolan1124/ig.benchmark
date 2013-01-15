@@ -41,7 +41,7 @@ public abstract class AbstractBenchmark
     protected String dbName = DefaultDatabaseName;
     protected String propertyFileName = DefaultPropertyFile;
 
-
+    protected String profileName = null;
     protected String serverURI = DefaultServerURI;
 
     public String getServerURI()
@@ -52,6 +52,11 @@ public abstract class AbstractBenchmark
     public void setServerURI(String serverURI)
     {
         this.serverURI = serverURI;
+    }
+
+    public void setProfileFileName(String name)
+    {
+        this.profileName = name;
     }
     
     protected void line()
@@ -252,8 +257,8 @@ public abstract class AbstractBenchmark
         Thread[] threads = new Thread[numberOfThreads];
         HashMap<Thread,AbstractOperation> map = new HashMap<Thread,AbstractOperation>();
         int i;
-        String fileName = null;
-
+        String fileName = this.profileName;
+        String operationName = null;
 //        System.out.printf("\t - %s -\n",name);
         if(event != null)
             event.start();
@@ -262,6 +267,8 @@ public abstract class AbstractBenchmark
             AbstractOperation operation = operationFactory.create(i,this.graphDataSource,this.transactionSize);
             if(fileName == null)
                 fileName = operation.getName();
+            if(operationName == null)
+                operationName = operation.getName();
             operation.initialize(this);
             Thread thread = new Thread(operation);
             map.put(thread,operation);
@@ -292,7 +299,7 @@ public abstract class AbstractBenchmark
             System.out.printf("\tsize:%d",totalCounter);
             System.out.printf("\ttx_size:%d",this.transactionSize);
             System.out.printf("\tthreads:%d\n",numberOfThreads);
-            event.save(fileName,numberOfThreads,this.transactionSize,indexType,databaseSize);       
+            event.save(fileName,operationName,numberOfThreads,this.transactionSize,indexType,databaseSize);       
         }
         //this.line();
 
