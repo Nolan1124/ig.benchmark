@@ -1,5 +1,6 @@
-name = "ingest_vertex_f_page_size"
+name = "Page size"
 description = "Vertex Ingestion as a function of page size."
+
 problem_size = {
     "mini":{"graph_size":[pow(2,16)]},
     "small":{"graph_size":[pow(2,17)]},
@@ -10,7 +11,7 @@ problem_size = {
 
 cases = [
     {
-        "name":"ingest_vertex_f_page_size",
+        #"name":"f_page_size",
         "description":"Vertex Ingestion as a function of page size.",
         "type":"graph_v_ingest",
         "data":
@@ -24,3 +25,4 @@ cases = [
             }
         },
     ]
+

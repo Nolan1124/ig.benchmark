@@ -35,7 +35,7 @@ class suite_info:
             self.default_problem_size = str(self.default_problem_size)
             pass
         except Exception, e:
-            self.name = None
+            self.default_problem_size = None
             pass
         return True
 
@@ -46,8 +46,10 @@ class suite_info:
             self.name = str(self.name)
             pass
         except Exception, e:
+            print e
             self.name = None
             pass
+        print module.name,self.name
         return True
 
     def __read_description__(self,module,handler):
@@ -57,7 +59,7 @@ class suite_info:
             self.description = str(self.description)
             pass
         except Exception, e:
-            self.name = None
+            self.description = None
             pass
         return True
     

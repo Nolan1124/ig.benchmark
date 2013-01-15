@@ -59,7 +59,7 @@ class operation(db_benchmark.operation):
                         for _threads in self.threads:
                             for _txsize in self.txsize:
                                 for _cache in self.cache:
-                                    print "Cache:",_cache
+                                    print 
                                     self.propertyFile.initialize()
                                     self.propertyFile.setInitCache(_cache[0])
                                     self.propertyFile.setMaxCache(_cache[1])

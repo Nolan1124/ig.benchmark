@@ -1,5 +1,5 @@
-name = "ingest_vertex_f_txsize"
-description = "Vertex Ingestion as a function of transaction size."
+name = "Transaction Size"
+description = "Vertex Ingestion as a function of transaction size.",
 __problem_size = {
     "mini":{"graph_size":[pow(2,21)]},
     "small":{"graph_size":[pow(2,22)]},
@@ -14,7 +14,7 @@ for _txsize in range(1,21):
     tx_size = pow(2,_txsize)
     graph_size = tx_size*5
     cases.append({
-            "name":"ingest_vertex_f_txsize",
+            #"name":"f_txsize",
             "description":"Vertex Ingestion as a function of transaction size.",
             "type":"graph_v_ingest",
             "data":

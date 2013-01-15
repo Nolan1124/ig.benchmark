@@ -38,7 +38,7 @@ def case_type_name_to_object(i):
     return None
             
 def html_reference(o,name):
-    return "<a href=javascript:tda_datatable_populate_using_name('%s','%d');>%s</a>"%(o.object_type(),o.id,name)
+    return "<a href=javascript:datatable_populate_using_name('%s','%d');>%s</a>"%(o.object_type(),o.id,name)
     
 def condition(value,pass_value,fail_value):
     if(value):
@@ -341,14 +341,10 @@ class ObjectView:
 
 default_location = "benchmark_web_report"
 class db_report:
-    
-
     TAG_MAP = {}
-    SIM_MAP = {}
+    ENGINE_MAP = {}
     SIM_TYPE_MAP = {}
-    TEMPLATE_MAP = {}
-    CASE_TYPE_ID_MAP = {}
-    
+        
     def __init__(self,db):
         self.db = db
         pass
@@ -361,13 +357,14 @@ class db_report:
         except:
             pass
         shutil.copytree(os.path.join(source,"web_template"), location)
+        os.mkdir(os.path.join(location,"data"))
         pass
 
 
     def traverse_case_tree(self,tree_structure,parent_id):
         cases = self.db.fetch_using(model.case,"parent",parent_id)
         for i in cases:
-            item_map = {"name":i.name,"ref":"javascript:tda_datatable_populate_using_name('case','%d');"%(i.id)}
+            item_map = {"name":i.name,"ref":"javascript:datatable_populate_using_name('case','%d');"%(i.id)}
             item_structure = []
             item_map["data"] = item_structure
             item_map["strong"] = 0
@@ -377,7 +374,7 @@ class db_report:
     def traverse_suite_tree(self,tree_structure,parent_id):
         suites = self.db.fetch_using(model.suite,"parent",parent_id)
         for i in suites:
-            item_map = {"name":i.name,"ref":"javascript:tda_datatable_populate_using_name('suite','%d');"%(i.id)}
+            item_map = {"name":i.name,"ref":"javascript:datatable_populate_using_name('suite','%d');"%(i.id)}
             item_structure = []
             self.traverse_suite_tree(item_structure,i.id)
             self.traverse_case_tree(item_structure,i.id)
@@ -529,52 +526,61 @@ class db_report:
                 pass
             pass
         pass
+
+
+    def get_suite_content(self,object_list):
+        data = []
+        for object in object_list:
+            row_data = []
+            for i in self.suite_view:
+                content = i[1]
+                row_data.append(eval(content["content"]))
+                pass
+            data.append(row_data)
+            pass
+        return data
     
     def report_suite_data(self,location,parent_id,object_view,plot_view):
+        self.suite_view = [
+            ({"sTitle":"Name"},{"content":'html_reference(object,object.name)'}),
+             ({"sTitle":"Description"},{"content":"object.description"})
+            ]
         suites = self.db.fetch_using(model.suite,"parent",parent_id)
         for suite in suites:
             f = file(os.path.join(location,"data","suite.%d.json"%(suite.id)),"w")
             case_structure = []
             cases = self.db.fetch_using(model.case,"parent",suite.id)
             sub_suites = self.db.fetch_using(model.suite,"parent",suite.id)
-            suite_data = object_view.get_suite_content(cases)
-            suite_data = suite_data + object_view.get_suite_content(sub_suites)
+            suite_data = self.get_suite_content(cases)
+            suite_data = suite_data + self.get_suite_content(sub_suites)
             structure = {
                 "name":"Suite: %s"%(suite.name),
                 "description":suite.description,
-                "column_description":object_view.get_suite_description(),
+                "column_description":[self.suite_view[0][0],self.suite_view[1][0]],
                 "data":suite_data
                 }
             print >> f,json.dumps(structure,indent=1)
             f.close()
             
-            for case in cases:
-                self.report_case_data(location,case,object_view,plot_view)
-                pass
+            #for case in cases:
+            #    self.report_case_data(location,case,object_view,plot_view)
+            #    pass
             self.report_suite_data(location,suite.id,object_view,plot_view)
             pass
         pass
 
     def map_constants(self):
+        engines  = self.db.fetch_using_generic(model.engine)
+        platform = self.db.fetch_using_generic(model.platform)
         tags = self.db.fetch_using_generic(model.tag)
-        sims  = self.db.fetch_using_generic(model.simulator)
-        sim_types = self.db.fetch_using_generic(model.simtype)
-        templates = self.db.fetch_using_generic(model.template)
-        __case_types__ = self.db.fetch_using_generic(model.case_type)
         for i in tags:
             self.TAG_MAP[i.id] = i.name
             pass
-        for i in sims:
-            self.SIM_MAP[i.id] = i.name
+        for i in engines:
+            self.ENGINE_MAP[i.id] = i.name
             pass
-        for i in sim_types:
+        for i in platform:
             self.SIM_TYPE_MAP[i.id] = i.name
-            pass
-        for i in templates:
-            self.TEMPLATE_MAP[i.id] = i.name
-            pass
-        for i in __case_types__:
-            self.CASE_TYPE_ID_MAP[i.name] = i
             pass
         pass
 
@@ -586,16 +592,15 @@ class db_report:
             self.db.create_database()
             pass
         self.map_constants()
-        object_view = ObjectView()
-        config_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),"report_config.py")
-        module = object_view.initialize(handler,config_name)
+        #object_view = ObjectView()
+        #config_name = os.path.join(os.path.dirname(os.path.dirname(__file__)),"report_config.py")
+        #module = object_view.initialize(handler,config_name)
 
-        if module:
-            plot_view  = PlotView()
-            plot_view.initialize(handler,module,config_name)
-            self.generate_treeview_data(location)
-            self.report_suite_data(location,-1,object_view,plot_view)
-            pass
+        #if module:
+        #   plot_view  = PlotView()
+        #  plot_view.initialize(handler,module,config_name)
+        self.generate_treeview_data(location)
+        self.report_suite_data(location,-1,None,None)
         pass
     pass
 

@@ -17,6 +17,7 @@ class operation(base.operation):
         self.add_argument("name","str",db_objects.db.default_name,"name of benchmark")
         self.add_argument("problem_size","str",'mini',"problem size [mini | small | medium | large | huge]")
         self.add_argument("tag","str",datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),"tag the benchmark run,default is current time stamp.")
+        self.add_argument("update",None,None,"Update the test suite without running it.")
         pass
 
     def __read_suite_info__(self,suite_path_name,traverse_suites):
@@ -83,6 +84,11 @@ class operation(base.operation):
         size = 0
         for case_info in _suite_info_.cases:
             _name = self.__get_case_data__(case_info,"name",None)
+            if _name == None:
+                _name = self.problem_size
+                pass
+            print _name
+                
             _description = self.__get_case_data__(case_info,"description",None)
             _type = self.__get_case_data__(case_info,"type",None)
             _data = self.__get_case_data__(case_info,"data",None)
@@ -151,8 +157,9 @@ class operation(base.operation):
             self.dbname = self.getSingleOption("name")
             self.tag = self.getSingleOption("tag")
             self.problem_size = self.getSingleOption("problem_size")
+            self.update_only = self.hasOption("update")
             (suite_object,size) = self.setup()
-            if suite_object:
+            if suite_object and (not self.update_only):
                 return suite_object.run(self.db,tag=self.tag,problem_size=self.problem_size,verbose=0)
             return False
         return True
