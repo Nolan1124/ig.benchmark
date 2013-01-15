@@ -1,5 +1,0 @@
-import IG_RunVertexIngest_f_pagesize_
-import IG_RunVertexIngest_f_txsize_
-import IG_RunVertexIngest_f_threads_
-import IG_RunVertexIngest_f_size_
-
