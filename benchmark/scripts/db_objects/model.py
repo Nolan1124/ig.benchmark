@@ -240,12 +240,16 @@ class suite(_name_description_):
 class case(suite):
     _property_ = suite._property_ + [
         ("case_type_id",db_types.INTEGER),
+        ("table_view",db_types.TEXT),
+        ("plot_view",db_types.TEXT),
         ("data",db_types.TEXT)
         ]
     
     def __init__(self):
         suite.__init__(self)
         self.case_type_id = None
+        self.table_view = None
+        self.plot_view = None
         self.data = None
         self.t_operation = None
         pass
@@ -273,12 +277,12 @@ class case(suite):
         parent_data = data[:(len(suite._property_))]
         self_data = data[(len(suite._property_)):]
         o = suite.set_data(self,parent_data)
-        (o.case_type_id,o.data) = self_data
+        (o.case_type_id,o.table_view,o.plot_view,o.data) = self_data
         return self
 
     def get_data(self,includeId):
         data = suite.get_data(self,includeId)
-        data += (self.case_type_id,self.data)
+        data += (self.case_type_id,self.table_view,self.plot_view,self.data)
         return data
     pass
 
@@ -318,6 +322,7 @@ class case_data_stat(db_object):
         db_object.__init__(self)
         self.case_id = None
         self.key = None
+        self.key_data = None
         self.counter = 0
         
         self.time_min = None
@@ -343,7 +348,75 @@ class case_data_stat(db_object):
         self.memory_max_min = None
         self.memory_max_max = None
         self.memory_max_sum = None
+
+        self.mapper = None
         pass
+
+    def generate_key_data(self):
+        if self.key_data == None:
+            self.key_data = json.loads(self.key)
+            pass
+        pass
+
+    def platform_id(self):
+        self.generate_key_data()
+        value = self.key_data[8]
+        return value
+    
+    def platform(self):
+        value = self.platform_id()
+        if self.mapper:
+            return self.mapper.PLATFORM_MAP[value]
+        return str(value)
+
+    def engine_id(self):
+        self.generate_key_data()
+        value = self.key_data[1]
+        return value
+
+    def engine(self):
+        value = self.engine_id()
+        if self.mapper:
+            return self.mapper.ENGINE_MAP[value]
+        return str(value)
+
+    def threads(self):
+        self.generate_key_data()
+        value = self.key_data[10]
+        return value
+
+    def index_type_id(self):
+        self.generate_key_data()
+        value = self.key_data[11]
+        return value
+
+    def index_type(self):
+        value = self.index_type_id()
+        if self.mapper:
+            return self.mapper.INDEX_MAP[value]
+        return str(value)
+    
+    def page_size(self):
+        self.generate_key_data()
+        return self.key_data[5]
+
+    def tx_size(self):
+        self.generate_key_data()
+        return self.key_data[4]
+    
+        
+    def rate_avg(self):
+        return self.rate_sum/self.counter
+
+    def time_avg(self):
+        return self.time_sum/self.counter
+
+    def memory_max_avg(self):
+        return self.memory_max_sum/self.counter
+
+    def memory_used_avg(self):
+        return self.memory_used_sum/self.counter
+
 
     def addCounter(self):
         if self.counter == None:
@@ -519,11 +592,13 @@ class case_data(db_object):
         pass
 
     def generateKey(self):
-        return json.dumps((self.case_id,self.engine_id,
-                           self.size,self.op_size,self.tx_size,
-                           self.page_size,self.cache_init,self.cache_max,
-                           self.platform_id,self.machine_id,self.threads,self.index_id
-                           ))
+        return json.dumps(
+            [self.case_id,self.engine_id,
+             self.size,self.op_size,self.tx_size,
+             self.page_size,self.cache_init,self.cache_max,
+             self.platform_id,self.machine_id,self.threads,self.index_id
+             ]
+            )
                 
     def setCase(self,_object_):
         self.case_id = _object_.id

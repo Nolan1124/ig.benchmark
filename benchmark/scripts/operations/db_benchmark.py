@@ -176,7 +176,7 @@ class operation(runnable.operation):
         #print string.join(arguments," ")
         return  p.returncode
 
-    Known_Engines = {"ig2":"InfiniteGraph version 2.1","ig3":"InfiniteGraph version 3.0"}
+    Known_Engines = {"ig2":"InfiniteGraph v2.1","ig3":"InfiniteGraph v3.0"}
     
     def is_known_engine(self,name):
         name = name.lower()

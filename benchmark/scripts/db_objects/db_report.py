@@ -8,6 +8,7 @@ import types
 import json
 import imp
 import db
+import math
 from db_types import *
 
 
@@ -142,17 +143,12 @@ class PlotView:
     def write_data(self,location,case_object,case_data_list):
         print ".",
         sys.stdout.flush()
-        plot_view = None
-        if self.plot_view_map.has_key(case_object.case_type_id):
-            plot_view = self.plot_view_map[case_object.case_type_id]
-        else:
-            plot_view = self.plot_view_map[None]
-            pass
+        plot_view = case_object.plot_view
         description_structure = None
         if plot_view == None:
             print "No plot view for type:",case_object.case_type_id
-
         else:
+            plot_view = json.loads(plot_view)
             iVar = []
             iVarView = plot_view["ivar"]
             dataView = plot_view["plot"]
@@ -176,7 +172,7 @@ class PlotView:
                 iVar.append({"name":i["name"],"data":data})
                 counter += 1
                 pass
-            
+
             description_structure = {
                 "name":case_object.name,
                 "description":case_object.description,
@@ -188,7 +184,11 @@ class PlotView:
                 name = view["name"]
                 y_axis = view["data"][0]
                 x_axis = view["data"][1]
-                
+                x_axis_label = None
+                if view.has_key("xaxis"):
+                    x_axis_label = view["xaxis"]
+                else:
+                    x_axis_label = x_axis
                 for data_key in data_map:
                     data = []
                     for object in data_map[data_key]:
@@ -205,7 +205,7 @@ class PlotView:
                             pass
                         pass
                     label = label[:len(label)-1]
-                    structure = {"data":data,"label":label}
+                    structure = {"data":data,"label":label,"xaxis":x_axis_label}
                     f = file(os.path.join(location,"data","case.%s.%d.%sjson"%(name,case_object.id,data_key)),"w")
                     print >> f,json.dumps(structure,indent=1)
                     f.close()
@@ -343,8 +343,9 @@ default_location = "benchmark_web_report"
 class db_report:
     TAG_MAP = {}
     ENGINE_MAP = {}
-    SIM_TYPE_MAP = {}
-        
+    PLATFORM_MAP = {}
+    INDEX_MAP = {}
+    
     def __init__(self,db):
         self.db = db
         pass
@@ -493,38 +494,50 @@ class db_report:
                                                    key_items[4])
             return ({"label":"time.%s"%(label),"data":time_data},{"label":"memory.%s"%(label),"data":mem_data})
         pass
+
+    def get_case_description(self,case):
+        if case.table_view:
+            table_view = json.loads(case.table_view)
+            description = []
+            for i in table_view:
+                description.append(i[0])
+            return description
+        return None
+
+
+    def get_case_content(self,case,case_data_list):
+        if case.table_view:
+            table_view = json.loads(case.table_view)
+            if case.plot_view:
+                print json.loads(case.plot_view)
+            data = []
+            for object in case_data_list:
+                object.mapper = self
+                row_data = []
+                for i in table_view:
+                    content = i[1]
+                    row_data.append(eval(content["content"]))
+                    pass
+                data.append(row_data)
+                pass
+            return data
+        return []
     
-    def report_case_data(self,location,case,object_view,plot_view):
+    def report_case_data(self,location,case):
         f = file(os.path.join(location,"data","case.%d.json"%(case.id)),"w")
-        case_data_list = self.db.fetch_using(model.case_data,"case_id",case.id)
-        case_data_structure = object_view.get_case_content(case_data_list,case.case_type_id)
+        case_data_list = self.db.fetch_using(model.case_data_stat,"case_id",case.id)
+        #case_data_structure = object_view.get_case_content(case_data_list,case.case_type_id)
+        case_data_structure = self.get_case_content(case,case_data_list)
         structure = {
             "name":"Case: %s"%(case.name),
             "description":case.description,
-            "column_description":object_view.get_case_description(case.case_type_id),
+            "column_description":self.get_case_description(case),
             "data":case_data_structure
             }
         print >> f,json.dumps(structure,indent=1)
         f.close()
-        #pData = db_report.PData()
-        #pData.add_list(case,case_data_list)
-        #f = file(os.path.join(location,"data","case.description.%d.json"%(case.id)),"w")
-        #print >> f,json.dumps(pData.description_structure,indent=1)
-        #f.close()
-
+        plot_view = PlotView()
         plot_view.write_data(location,case,case_data_list)
-               
-        if 0:
-            for key in pData.data_map:
-                (time,memory) = pData.get_data(key)
-                f = file(os.path.join(location,"data","case.time.%d.%s.json"%(case.id,key)),"w")
-                print >> f,json.dumps(time)
-                f.close()
-                f = file(os.path.join(location,"data","case.memory.%d.%s.json"%(case.id,key)),"w")
-                print >> f,json.dumps(memory)
-                f.close()
-                pass
-            pass
         pass
 
 
@@ -540,7 +553,7 @@ class db_report:
             pass
         return data
     
-    def report_suite_data(self,location,parent_id,object_view,plot_view):
+    def report_suite_data(self,location,parent_id):
         self.suite_view = [
             ({"sTitle":"Name"},{"content":'html_reference(object,object.name)'}),
              ({"sTitle":"Description"},{"content":"object.description"})
@@ -562,10 +575,10 @@ class db_report:
             print >> f,json.dumps(structure,indent=1)
             f.close()
             
-            #for case in cases:
-            #    self.report_case_data(location,case,object_view,plot_view)
-            #    pass
-            self.report_suite_data(location,suite.id,object_view,plot_view)
+            for case in cases:
+                self.report_case_data(location,case)
+                pass
+            self.report_suite_data(location,suite.id)
             pass
         pass
 
@@ -573,14 +586,21 @@ class db_report:
         engines  = self.db.fetch_using_generic(model.engine)
         platform = self.db.fetch_using_generic(model.platform)
         tags = self.db.fetch_using_generic(model.tag)
+        index_type = self.db.fetch_using_generic(model.index_type)
         for i in tags:
             self.TAG_MAP[i.id] = i.name
             pass
         for i in engines:
-            self.ENGINE_MAP[i.id] = i.name
+            self.ENGINE_MAP[i.id] = i.description
             pass
         for i in platform:
-            self.SIM_TYPE_MAP[i.id] = i.name
+            self.PLATFORM_MAP[i.id] = i.name
+            pass
+        for i in index_type:
+            if i.name == "gr":
+                self.INDEX_MAP[i.id] = "graph"
+            else:
+                self.INDEX_MAP[i.id] = i.name
             pass
         pass
 
@@ -600,7 +620,7 @@ class db_report:
         #   plot_view  = PlotView()
         #  plot_view.initialize(handler,module,config_name)
         self.generate_treeview_data(location)
-        self.report_suite_data(location,-1,None,None)
+        self.report_suite_data(location,-1)
         pass
     pass
 

@@ -40,6 +40,7 @@ function datatable_initialize(url)
             current_url_datatable_id = query[1];
         }
     }
+    datatable_populate_using_name("suite","1");
 }
 
 var case_plot_id = "";
@@ -96,7 +97,15 @@ function datatable_populate_using_name(type,id)
                                     
                   var oTable = $('#datatable_id').dataTable( {
                           "aaData": data.data,
-                          "aoColumns": data.column_description
+                          "aoColumns": data.column_description,
+                          "aLengthMenu": [
+                              [-1,10,50,75,100],
+                              ["All",10,50,75,100]
+                              ],
+                          "iDisplayLength": -1,
+                          //"sScrollY": "200px",
+                          //"bPaginate": false,
+                          "bScrollAutoCss": false,
                           } );
                   //oTable.fnAdjustColumnSizing(true);
               }
@@ -105,7 +114,7 @@ function datatable_populate_using_name(type,id)
 
 function open_time_plot_window()
 {
-    window.open ("plot.html?id="+case_plot_id+"?type=time","Time Plot","menubar=0,resizable=1,width=1000,height=700");
+    window.open ("plot.html?id="+case_plot_id+"?type=time","Time Plot","menubar=0,resizable=1,width=1200,height=700");
 }
 
 function open_memory_plot_window()
@@ -115,7 +124,7 @@ function open_memory_plot_window()
 
 function open_plot_window(type)
 {
-    window.open ("plot.html?id="+case_plot_id+"?type="+type,"Plot"+type,"menubar=0,resizable=1,width=1000,height=700");
+    window.open ("plot.html?id="+case_plot_id+"?type="+type,"Plot"+type,"menubar=0,resizable=1,width=1200,height=700");
 }
 
 function open_simple_plot_window(type,data_file)

@@ -94,6 +94,8 @@ function plot_data_using_name(name)
     $.getJSON(name,function(data)
               {
                   dataset.push(data);
+                  //alert(data.xaxis);
+                  document.getElementById('x_axis_label_id').innerHTML = data.xaxis;
                   plot_current_data();
                   set_current_link();
               }

@@ -29,7 +29,6 @@ class suite_info:
         return os.path.basename(self.get_path())
 
     def __read_default_problem_size__(self,module,handler):
-        _type_ = None
         try:
             self.default_problem_size = module.default_problem_size
             self.default_problem_size = str(self.default_problem_size)
@@ -40,7 +39,6 @@ class suite_info:
         return True
 
     def __read_name__(self,module,handler):
-        _type_ = None
         try:
             self.name = module.name
             self.name = str(self.name)
@@ -49,11 +47,9 @@ class suite_info:
             print e
             self.name = None
             pass
-        print module.name,self.name
         return True
 
     def __read_description__(self,module,handler):
-        _type_ = None
         try:
             self.description = module.description
             self.description = str(self.description)

@@ -21,6 +21,26 @@ cases = [
             "txsize":[pow(2,14)],
             "engine":["ig2","ig3"],
             "new":1,
+            },
+        "table_view":[
+            [{"sTitle":"Database engine"},{"content":"object.engine()"}],
+           # [{"sTitle":"Platform"},{"content":"object.platform()"}],
+            [{"sTitle":"Threads"},{"content":"object.threads()"}],
+            [{"sTitle":"Index Type"},{"content":"object.index_type()"}],
+            [{"sTitle":"Rate (v/s)"},{"content":"object.rate_avg()"}],
+        #    [{"sTitle":"Time (ms)"},{"content":"object.time_avg()"}],
+            [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
+            ],
+        "plot_view":{
+            "plot":[
+                {"name":"rate","data":("object.rate_avg()","object.threads()"),"xaxis":"Threads"},
+                {"name":"memory","data":("object.memory_used_avg()*1e-6","object.threads()"),"xaxis":"Threads"},
+                ],
+            "ivar":[
+                {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
+                {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
+                {"name":"Index Type","id":"object.index_type_id()","content":"object.index_type()"},
+                ]
             }
         },
     ]

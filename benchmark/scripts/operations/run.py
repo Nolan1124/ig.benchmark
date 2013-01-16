@@ -59,6 +59,7 @@ class operation(base.operation):
         suite.path = _suite_info_.get_path()
         suite.problem_size = json.dumps(_suite_info_.problem_size)
         suite.default_problem_size = _suite_info_.default_problem_size
+        suite.description = _suite_info_.description
         self.db.update(suite)
         _suite_info_.id = suite.id
         suite.transient_cases = _suite_info_.cases
@@ -92,7 +93,8 @@ class operation(base.operation):
             _description = self.__get_case_data__(case_info,"description",None)
             _type = self.__get_case_data__(case_info,"type",None)
             _data = self.__get_case_data__(case_info,"data",None)
-
+            _table_view = self.__get_case_data__(case_info,"table_view",None)
+            _plot_view = self.__get_case_data__(case_info,"plot_view",None)
             _operation_object_ = base._operation_(_type)
             if _operation_object_:
                 if _operation_object_.is_runnable():
@@ -115,6 +117,15 @@ class operation(base.operation):
                     case_object.data = str(_data)
                     case_object.setCaseType(case_type_object)
                     case_object.t_operation = _operation_object_
+                    if _table_view:
+                        case_object.table_view = json.dumps(_table_view)
+                    else:
+                        case_object.table_view = None
+                    if _plot_view:
+                        case_object.plot_view = json.dumps(_plot_view)
+                    else:
+                        case_object.plot_view = None
+                        pass
                     self.db.update(case_object)
                     suite.t_cases.append(case_object)
                     size += 1

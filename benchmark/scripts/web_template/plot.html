@@ -46,49 +46,51 @@
 
     </style>
     
-
-    
-    <div id="header">
-      <h1 id="title_id"><a href="" id="title_link_id"></a></h1>
-      <h2 id="description_id"></h2>
+	<div id="header">
+	  <h1 id="title_id"><a href="" id="title_link_id"></a></h1>
+	  <h2 id="description_id"></h2>
     
       <hr>
-      <table>
-	    <td>
-	      <table>
-		  <tr><td><table id="ivar_table_selection_id" width="200px" height="150px"></table></td></tr>
-		  <tr><td><button id="plot_button_data_id" align="center">add data to plot</button></td></tr>
+	  <table>
+		<td>
+		  <table>
+		      <tr><td><table id="ivar_table_selection_id" width="200px" height="150px"></table></td></tr>
+		      <tr><td><button id="plot_button_data_id" align="center">add data</button></td></tr>
+		  </table>
+		</td>
 		
-	      </table>
-	    </td>
-	    
-	    <td>
-	      <table>
-		  <tr>
-		    <td align="right">
-		      <table>
-			    
-			    <td>
-			      <span id="plot_toolbar" class="ui-widget-header ui-corner-all">
-				<input type="checkbox" id="plot_show_points_id" /><label for="plot_show_points_id">points</label>
-				<input type="checkbox" id="plot_show_lines_id" /><label for="plot_show_lines_id">lines</label>
-				<input type="checkbox" id="plot_show_legends_id" /><label for="plot_show_legends_id">legends</label>
-				<button id="plot_clear_id" />clear</button>
-			      </span>
-			    </td>
-		      </table>
-		    </td>
-	  	  </tr>
-		  <tr>
-		    <td valign="top">
-		      <div id="plot_placeholder"></div>
-		    </td>
-		  </tr>
-	      </table>
-	    </td>
-      </table>
-    </div>
-
+		<td>
+		  <table>
+		      <tr>
+			<td align="right">
+			  <table>
+				<td>
+				  <span id="plot_toolbar" class="ui-widget-header ui-corner-all">
+				    <input type="checkbox" id="plot_show_points_id" /><label for="plot_show_points_id">points</label>
+				    <input type="checkbox" id="plot_show_lines_id" /><label for="plot_show_lines_id">lines</label>
+				    <input type="checkbox" id="plot_show_legends_id" /><label for="plot_show_legends_id">legends</label>
+				    <button id="plot_clear_id" />clear</button>
+				  </span>
+				</td>
+			  </table>
+			</td>
+		      </tr>
+		      <tr>
+			<td valign="top">
+			  <div id="plot_placeholder"></div>
+			</td>
+		      </tr>
+		      <tr>
+			<td>
+			  <div id="x_axis_label_id" style="height:30px; line-height:30px; text-align:center;"></div>
+			</td>
+		      </tr>
+		  </table>
+		</td>
+	  </table>
+	
+	</div>
+	
 
 
 
