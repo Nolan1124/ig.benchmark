@@ -88,7 +88,7 @@ class operation(base.operation):
             if _name == None:
                 _name = self.problem_size
                 pass
-            print _name
+            
                 
             _description = self.__get_case_data__(case_info,"description",None)
             _type = self.__get_case_data__(case_info,"type",None)

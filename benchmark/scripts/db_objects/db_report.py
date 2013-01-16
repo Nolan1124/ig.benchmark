@@ -508,8 +508,6 @@ class db_report:
     def get_case_content(self,case,case_data_list):
         if case.table_view:
             table_view = json.loads(case.table_view)
-            if case.plot_view:
-                print json.loads(case.plot_view)
             data = []
             for object in case_data_list:
                 object.mapper = self

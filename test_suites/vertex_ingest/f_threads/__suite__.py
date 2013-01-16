@@ -27,7 +27,7 @@ cases = [
            # [{"sTitle":"Platform"},{"content":"object.platform()"}],
             [{"sTitle":"Threads"},{"content":"object.threads()"}],
             [{"sTitle":"Index Type"},{"content":"object.index_type()"}],
-            [{"sTitle":"Rate (v/s)"},{"content":"object.rate_avg()"}],
+            [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
         #    [{"sTitle":"Time (ms)"},{"content":"object.time_avg()"}],
             [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
             ],
