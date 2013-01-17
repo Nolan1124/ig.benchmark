@@ -15,7 +15,6 @@ for _txsize in range(8,18):
     tx_size = pow(2,_txsize)
     graph_size = tx_size*5
     cases.append({
-        #"name":"f_txsize",
         "name":"ingest",
         "description":"Vertex Ingestion as a function of transaction size (page_size=%d)."%(pow(2,14)),
         "type":"graph_v_ingest",

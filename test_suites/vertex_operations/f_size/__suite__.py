@@ -72,7 +72,7 @@ search_cache = [
     ]
     
 for g in graph_size:
-    if 0:
+    if 1:
         cases.append({
             "name":"ingest",
             "description":"Vertex Ingestion as a function of graph size (threads=%d,txsize=%d,page_size=%d)."%(threads,txsize,pow(2,page_size)),
