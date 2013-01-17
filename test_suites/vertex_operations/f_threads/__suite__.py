@@ -10,7 +10,7 @@ problem_size = {
 
 cases = [
     {
-        #"name":"f_threads",
+        "name":"ingest",
         "description":"Vertex Ingestion as a function of number of threads.",
         "type":"graph_v_ingest",
         "data":

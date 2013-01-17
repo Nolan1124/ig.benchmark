@@ -6,10 +6,10 @@ txsize  = pow(2,14)
 page_size = 14
 
 
-counter = pow(2,19)
+counter = pow(2,20)
 increment = counter
 graph_size = []
-for i in range(1,3):
+for i in range(1,21):
     graph_size.append(counter)
     counter += increment
     pass
@@ -63,12 +63,11 @@ search_plot_view = {
 def MB(value):
     return value*1000
 
-search_size = [pow(2,14),2*pow(2,14),3*pow(2,14),4*pow(2,14)]
+search_size = [pow(2,14),2*pow(2,14)]
 search_cache = [
     [MB(1),MB(1)],
-    [MB(1),MB(2)],
-    [MB(1),MB(3)],
-    [MB(1),MB(500)],
+    [MB(1),MB(10)],
+    [MB(1),MB(100)],
     [MB(1),MB(1000)],
     ]
     

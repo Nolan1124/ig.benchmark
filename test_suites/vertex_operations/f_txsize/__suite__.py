@@ -1,21 +1,22 @@
 name = "Transaction Size"
 description = "Vertex Ingestion as a function of transaction size."
 
-__problem_size = {
-    "mini":{"graph_size":[pow(2,21)]},
-    "small":{"graph_size":[pow(2,22)]},
-    "medium":{"graph_size":[pow(2,23)]},
-    "large":{"graph_size":[pow(2,24)]},
-    "huge":{"graph_size":[pow(2,25)]},
+problem_size = {
+    "mini":{"graph_size":[pow(2,20)]},
+    "small":{"graph_size":[pow(2,21)]},
+    "medium":{"graph_size":[pow(2,22)]},
+    "large":{"graph_size":[pow(2,23)]},
+    "huge":{"graph_size":[pow(2,24)]},
 }
 
 txsize = []
 cases = []
-for _txsize in range(1,21):
+for _txsize in range(8,18):
     tx_size = pow(2,_txsize)
     graph_size = tx_size*5
     cases.append({
         #"name":"f_txsize",
+        "name":"ingest",
         "description":"Vertex Ingestion as a function of transaction size (page_size=%d)."%(pow(2,14)),
         "type":"graph_v_ingest",
         "data":

@@ -10,7 +10,7 @@ class operation(db_benchmark.operation):
         db_benchmark.operation.__init__(self)
         self.add_argument("index","str","none","index type")
         self.add_argument("new","int",0,"create new graph")
-        self.add_argument("size","eval",pow(2,12),"number of vertices.")
+        self.add_argument("graph_size","eval",pow(2,20),"number of vertices.")
         self.add_argument("threads","eval",1,"number of threads")
         self.add_argument("txsize","eval",10000,"transaction size")
         self.add_argument("cache","eval",(1000,500000),"cache size given as a set of tuplets (in kB) (init,max) or [(init_1,max_1),(init_2,max_2),.....]")
@@ -149,7 +149,7 @@ class operation(db_benchmark.operation):
         if db_benchmark.operation.operate(self):
             self.index = self.getOption("index")
             self.new_graph = self.getSingleOption("new")
-            self.graph_size = self.getOption("size")
+            self.graph_size = self.getOption("graph_size")
             self.threads = self.getOption("threads")
             self.txsize = self.getOption("txsize")
             self.cache = self.getOption("cache")
