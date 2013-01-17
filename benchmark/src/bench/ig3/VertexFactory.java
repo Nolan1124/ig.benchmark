@@ -16,6 +16,7 @@ public class VertexFactory extends AbstractVertexFactory
     {
         Vertex vertex = this.createVertexObject(graphDB,indexObject,value);
         super.put(value,vertex.getId());
+        
         return vertex;
     }
 
@@ -28,6 +29,7 @@ public class VertexFactory extends AbstractVertexFactory
     public Vertex createVertexObject(GraphDatabase graphDB,Object indexObject,long value) throws Exception
     {
         Vertex vertex = new Vertex(value);
+      
         graphDB.addVertex(vertex);
         return vertex;
     }

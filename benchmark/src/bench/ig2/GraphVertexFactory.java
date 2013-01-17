@@ -20,8 +20,18 @@ public class GraphVertexFactory extends VertexFactory
         return IndexManager.<bench.ig2.Vertex>getGraphIndex(Vertex.class.getName(),"value");
     }
 
-    public synchronized Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
+    public synchronized bench.ig2.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
     {
-        return ((GraphIndex<bench.ig2.Vertex>)object).getSingleResult("value",(Long)value);
+        Vertex vertex = null;
+        try
+        {
+            vertex = ((GraphIndex<bench.ig2.Vertex>)object).getSingleResult("value",(Long)value); 
+        }
+        catch(Throwable t)
+        {
+            System.out.printf("[IG2] Exception (%s) when searching for (value=%d)\n",t.getMessage(),value);
+            vertex = null;
+        }
+        return vertex;
     }
 }

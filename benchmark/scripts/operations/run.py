@@ -14,7 +14,6 @@ class operation(base.operation):
     "Runs a set of suite organized tests."
     def __init__(self):
         base.operation.__init__(self)
-        self.add_argument("name","str",db_objects.db.default_name,"name of benchmark")
         self.add_argument("problem_size","str",'mini',"problem size [mini | small | medium | large | huge]")
         self.add_argument("tag","str",datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),"tag the benchmark run,default is current time stamp.")
         self.add_argument("update",None,None,"Update the test suite without running it.")

@@ -40,8 +40,7 @@ public class FindVertex extends IGOperation
             {
                 this.createReadTransaction();
                 for(Long vertexID:searchList)
-                {
-            
+                {            
                     Vertex vertex = vertexFactory.findObject(this.graphDB,indexManager,vertexID);
                     this.counter += 1;
                     if(vertex != null)

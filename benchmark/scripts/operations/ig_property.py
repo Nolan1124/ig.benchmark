@@ -1,3 +1,5 @@
+import random
+
 class __Defaults__:
     Defaults = {
         "IG.BootFilePath":".",
@@ -34,6 +36,7 @@ class PropertyFile:
         
     def initialize(self):
         self.properties = self.defaults.copy()
+        self.properties["IG.InstanceId"] = random.randint(1,65535-1)
         pass
 
     def generate(self):

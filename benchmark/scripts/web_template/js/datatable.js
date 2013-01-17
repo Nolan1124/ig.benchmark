@@ -112,6 +112,7 @@ function datatable_populate_using_name(type,id)
               );
 }
 
+/*
 function open_time_plot_window()
 {
     window.open ("plot.html?id="+case_plot_id+"?type=time","Time Plot","menubar=0,resizable=1,width=1200,height=700");
@@ -121,13 +122,17 @@ function open_memory_plot_window()
 {
     window.open ("plot.html?id="+case_plot_id+"?type=memory","Memory Plot","menubar=0,resizable=1,width=1000,height=700");
 }
+*/
 
+var plot_counter = 1;
 function open_plot_window(type)
 {
-    window.open ("plot.html?id="+case_plot_id+"?type="+type,"Plot"+type,"menubar=0,resizable=1,width=1200,height=700");
+    window.open ("plot.html?id="+case_plot_id+"?type="+type,"Plot"+type+plot_counter,"menubar=0,resizable=1,width=1200,height=700");
+    plot_counter += 1;
 }
 
 function open_simple_plot_window(type,data_file)
 {
-    window.open ("simple_plot.html?id="+case_plot_id+"?type="+type+"?data="+data_file,"Plot"+type,"menubar=0,resizable=1,width=800,height=700");
+    window.open ("simple_plot.html?id="+case_plot_id+"?type="+type+"?data="+data_file,"Plot"+type+plot_counter,"menubar=0,resizable=1,width=800,height=700");
+    plot_counter += 1;
 }

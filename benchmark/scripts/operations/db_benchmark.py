@@ -112,7 +112,7 @@ class operation(runnable.operation):
                              "-noTitle",
                              "-name",disk.name,
                              "-storageLocation","%s::%s"%(disk.host,disk.device),
-                             "-bootfile",os.path.join(self.config.BootFilePath[version],"bench.boot")
+                             "-bootfile",os.path.join(self.config.BootFilePath[version],"ig3.boot")
                              ]
                 
                 if self.verbose == 0:
@@ -140,12 +140,43 @@ class operation(runnable.operation):
         jarFile = self.config.BenchmarkJar[version]
         binary = "java"
         arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation",operation,"-property",propertyObject.fileName,"-index",index,"-verbose",str(0)]
+        arguments.append("-db")
+        arguments.append(engine)
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
         
         return  p.returncode
 
 
+    def ig_v_search(self,search_file_name,version,propertyObject,index,size,graph_size,threads,txsize,profileName):
+        env  = os.environ.copy()
+        engine = None
+        jarFile = None
+        propertyObject.properties["IG.BootFilePath"] = self.config.BootFilePath[version]
+        propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
+        propertyObject.generate()
+        lib_path_list = [os.path.join(self.config.Root[version],"lib")]
+        lib = string.join(lib_path_list,":")
+        env["DYLD_LIBRARY_PATH"] = lib
+        env["LD_LIBRARY_PATH"] = lib
+        path_list = env["PATH"]
+        env["PATH"] = os.path.join(self.config.Root[version],"bin") + ":" + path_list
+        engine = version
+        jarFile = self.config.BenchmarkJar[version]
+        binary = "java"
+        arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation","search","-property",propertyObject.fileName,"-index",index,"-verbose",str(10),
+                     "-searchlist",search_file_name,
+                     "-size",str(graph_size),
+                     "-t",str(threads),
+                     "-tsize",str(txsize),
+                     "-profile",profileName,
+                     "-db",engine
+                     ]
+     
+        p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
+        p.wait()
+        return  p.returncode
+    
     def ig_v_ingest(self,version,propertyObject,index,size,block,threads,txsize,profileName):
         env  = os.environ.copy()
         engine = None
@@ -167,13 +198,13 @@ class operation(runnable.operation):
                      "-block",str(block),
                      "-vit",str(threads),
                      "-tsize",str(txsize),
-                     "-profile",profileName
+                     "-profile",profileName,
+                     "-db",engine
                      ]
-        #print arguments
-        #raw_input()
+       
+        
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
-        #print string.join(arguments," ")
         return  p.returncode
 
     Known_Engines = {"ig2":"InfiniteGraph v2.1","ig3":"InfiniteGraph v3.0"}
@@ -221,6 +252,6 @@ class operation(runnable.operation):
         if runnable.operation.operate(self):
             self.engine = self.getOption("engine")
             _page_size = self.getOption("page_size")
-            self.setup_page_sizes()
+            self.setup_page_sizes(_page_size)
             return self.setup_engine_objects()
         return False

@@ -358,6 +358,17 @@ class case_data_stat(db_object):
             pass
         pass
 
+    def op_size(self):
+        self.generate_key_data()
+        value = self.key_data[3]
+        return value
+
+    def graph_size(self):
+        self.generate_key_data()
+        value = self.key_data[2]
+        return value
+
+        
     def platform_id(self):
         self.generate_key_data()
         value = self.key_data[8]
@@ -395,6 +406,14 @@ class case_data_stat(db_object):
         if self.mapper:
             return self.mapper.INDEX_MAP[value]
         return str(value)
+
+    def cache_init(self):
+        self.generate_key_data()
+        return self.key_data[6]
+
+    def cache_max(self):
+        self.generate_key_data()
+        return self.key_data[7]
     
     def page_size(self):
         self.generate_key_data()
