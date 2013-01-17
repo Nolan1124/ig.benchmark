@@ -38,8 +38,8 @@ for _txsize in range(8,18):
             ],
         "plot_view":{
             "plot":[
-                {"name":"rate","data":("object.rate_avg()","math.log(object.tx_size(),2)"),"xaxis":"Transaction size [log2]"},
-                {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(object.tx_size(),2)"),"xaxis":"Transaction size [log2]"},
+                {"name":"rate","data":("object.rate_avg()","math.log(object.tx_size(),2)"),"xaxis":"pow(2,Transaction size)"},
+                {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(object.tx_size(),2)"),"xaxis":"pow(2,Transaction size)"},
                 ],
             "ivar":[
                 {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
