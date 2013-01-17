@@ -9,10 +9,10 @@ import types
 import json
 import imp
 from db_types import *
-
+import platform
 
 class db:
-    default_name = "__benchmark_data__"
+    default_name = platform.uname()[0].lower()
     schema_classes = [
         model.engine,
         model.os_type,
