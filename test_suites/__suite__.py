@@ -3,5 +3,6 @@ name = "Performance benchmark"
 description = "Benchmark to compare varies operation of the Infinite Graph database."
 
 suites = [
-    "vertex_operations"
+    "vertex_operations",
+    "relationship_operations"
     ]
