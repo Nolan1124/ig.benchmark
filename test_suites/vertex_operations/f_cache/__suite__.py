@@ -16,7 +16,7 @@ search_cache = []
 for i in range(1,5,1):
     search_cache.append([MB(1),MB(i)])
     pass
-search_cache.append([[MB(1),MB(500)]])
+search_cache.append([MB(1),MB(500)])
 
 max_size = 17
 for i in range(10,max_size+1):
@@ -35,8 +35,8 @@ search_table_view = [
 
 search_plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"(Search size)/(Sample Size)"},
-        {"name":"memory","data":("object.memory_used_avg()*1e-6","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"(Search size)/(Sample Size)"},
+        {"name":"rate","data":("object.rate_avg()","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"log2 [(Search size)/(Sample Size)]"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"log2 [(Search size)/(Sample Size)]"},
         ],
     "ivar":[
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
