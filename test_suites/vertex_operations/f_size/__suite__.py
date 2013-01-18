@@ -14,7 +14,6 @@ for i in range(1,21):
     counter += increment
     pass
 
-
 cases = []
 table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
@@ -26,7 +25,7 @@ table_view = [
 
 plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","object.graph_size()"),"xaxis":"Graph Size"},
+        {"name":"rate","data":("object.rate_avg()","object.graph_size()*1e-6"),"xaxis":"Graph Size (million)"},
         {"name":"memory","data":("object.memory_used_avg()*1e-6","object.graph_size()*1e-6"),"xaxis":"Graph Size (million)"},
         ],
     "ivar":[
@@ -47,7 +46,7 @@ search_table_view = [
 
 search_plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","object.graph_size()"),"xaxis":"Graph Size"},
+        {"name":"rate","data":("object.rate_avg()","object.graph_size()*1e-6"),"xaxis":"Graph Size (million)"},
         {"name":"memory","data":("object.memory_used_avg()*1e-6","object.graph_size()*1e-6"),"xaxis":"Graph Size (million)"},
         ],
     "ivar":[
