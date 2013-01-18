@@ -25,6 +25,7 @@ search_table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
     [{"sTitle":"Search Size"},{"content":"object.op_size()"}],
+    [{"sTitle":"Sample Size"},{"content":"object.object_data('search_set_size',object.graph_size())"}],
     [{"sTitle":"Cache Max(MB)"},{"content":"'%.0f'%(1e-3*object.cache_max())"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
@@ -32,8 +33,8 @@ search_table_view = [
 
 search_plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","object.graph_size()*1e-6"),"xaxis":"Graph Size (million)"},
-        {"name":"memory","data":("object.memory_used_avg()*1e-6","object.graph_size()*1e-6"),"xaxis":"Graph Size (million)"},
+        {"name":"rate","data":("object.rate_avg()","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"Average number of repeats"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"Average number of repeats"},
         ],
     "ivar":[
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
@@ -48,7 +49,7 @@ cases = []
 for engine in ["ig2","ig3"]:
     cases.append({
         "name":"ingest",
-        "description":"Vertex Ingestion as a function of graph size (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
+        "description":"Vertex Ingestion for search purposes (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
         "type":"graph_v_ingest",
         "data":
         {

@@ -401,6 +401,15 @@ class case_data_stat(db_object):
         value = self.key_data[11]
         return value
 
+    def object_data(self,name,default_value):
+        self.generate_key_data()
+        if len(self.key_data) >= 13:
+            data = self.key_data[12]
+            if data.has_key(name):
+                return data[name]
+            pass
+        return default_value
+
     def index_type(self):
         value = self.index_type_id()
         if self.mapper:
