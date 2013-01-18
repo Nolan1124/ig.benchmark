@@ -5,6 +5,7 @@ import time
 import sys
 import db_objects
 import random
+import types
 
 class operation(db_benchmark.operation):
     def __init__(self):
@@ -65,21 +66,32 @@ class operation(db_benchmark.operation):
         random.seed(self.seed)
         for _index in self.index: 
             for _page_size in self.page_size:
-                for _v_size in self.search_size:
+                for _v_size_value in self.search_size:
                     for _threads in self.threads:
                         for _txsize in self.txsize:
                             for _cache in self.cache:
                                 for engine in self.engine_objects:
-                                    boot_file_path = self.config.BootFilePath[engine.name]
-                                    boot_file_name = os.path.join(boot_file_path,"bench.boot")
+                                    _v_size = None
+                                    _v_size_set = None
+                                    if type(_v_size_value) == types.ListType:
+                                        _v_size = _v_size_value[0]
+                                        _v_size_set = _v_size_value[1]
+                                    else:
+                                        _v_size = _v_size_value
+                                        _v_size_set = graph_size
+                                        pass
+                                    #boot_file_path = self.config.BootFilePath[engine.name]
+                                    #boot_file_name = os.path.join(boot_file_path,"bench.boot")
                                     search_file_name = "searchlist.data"
-                                    self.generate_random_searchlist(search_file_name,random,_v_size,self.graph_size)
+                                    self.generate_random_searchlist(search_file_name,random,_v_size,_v_size_set)
                                     print 
                                     self.propertyFile.initialize()
                                     self.propertyFile.setInitCache(_cache[0])
                                     self.propertyFile.setMaxCache(_cache[1])
                                     self.propertyFile.properties["IG.PageSize"] = _page_size
-                                    _s_ = "\tgraph(%s) search vertices index:%s page_size:%d tx_size:%d size:%d search_size:%d cache_init:%d cache_max:%d"%(engine.name,_index,_page_size,_txsize,_v_size,self.graph_size,_cache[0],_cache[1])
+                                    _s_ = "\tgraph(%s) search vertices index:%s page_size:%d tx_size:%d size:%d search_size:%d search_size_set:%d cache_init:%d cache_max:%d search_ratio=%f"%(
+                                        engine.name,_index,_page_size,_txsize,self.graph_size,_v_size,_v_size_set,_cache[0],_cache[1],(1.0*_v_size/_v_size_set)
+                                        )
                                     print self.output_string(_s_,base.Colors.Blue,True)
                                     profileName = "search.profile"
                                     if self.tag_object:
@@ -103,8 +115,10 @@ class operation(db_benchmark.operation):
                                             done = True
                                         else:
                                             os.remove(profileName)
+                                            pass
                                         run_counter += 1
-                                        
+                                        pass
+                                    
                                     if self.case_object:
                                         f = file(profileName,"r")
                                         line = f.read()
@@ -135,6 +149,10 @@ class operation(db_benchmark.operation):
                                                                                  index_id=index_object.id,
                                                                                  status=1
                                                                                  )
+                                        if _v_size_set != self.graph_size:
+                                            case_data_object.setDataValue("search_set_size",_v_size_set)
+                                            self.db.update(case_data_object)
+                                            pass
                                         case_data_key = case_data_object.generateKey()
                                         case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
                                                                                             key=case_data_key,

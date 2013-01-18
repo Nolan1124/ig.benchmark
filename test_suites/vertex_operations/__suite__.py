@@ -5,4 +5,5 @@ suites = [
     "f_txsize",
     "f_threads",
     "f_size",
+    "f_cache",
     ]

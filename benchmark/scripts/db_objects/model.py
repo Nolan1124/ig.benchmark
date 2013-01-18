@@ -615,10 +615,27 @@ class case_data(db_object):
             [self.case_id,self.engine_id,
              self.size,self.op_size,self.tx_size,
              self.page_size,self.cache_init,self.cache_max,
-             self.platform_id,self.machine_id,self.threads,self.index_id
+             self.platform_id,self.machine_id,self.threads,self.index_id,
+             self.data
              ]
             )
-                
+    
+    def setDataValue(self,name,value):
+        if self.data == None:
+            self.data = {}
+            pass
+        self.data[name] = value
+        pass
+
+    def getDataValue(self,name):
+        value = None
+        if self.data:
+            if self.data.has_key(name):
+                value = data[name]
+                pass
+            pass
+        return value
+    
     def setCase(self,_object_):
         self.case_id = _object_.id
         return self
@@ -647,11 +664,18 @@ class case_data(db_object):
             self.time,self.rate,
             self.memory_init,self.memory_used,self.memory_committed,self.memory_max,
             self.data ) = self_data
-        
+        if self.data == None:
+            self.data = {}
+        else:
+            self.data = json.loads(self.data)
+            pass
         return self
     
     def get_data(self,includeId):
         data = db_object.get_data(self,includeId)
+        if self.data == None:
+            self.data = {}
+            pass
         data += (
             self.timestamp,self.tag_id,self.status,
             self.case_id,self.engine_id,
@@ -660,7 +684,7 @@ class case_data(db_object):
             self.platform_id,self.machine_id,self.threads,self.index_id,
             self.time,self.rate,
             self.memory_init,self.memory_used,self.memory_committed,self.memory_max,
-            self.data)
+            json.dumps(self.data))
         return data
     
     pass
