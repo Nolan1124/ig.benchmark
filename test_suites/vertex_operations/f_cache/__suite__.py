@@ -33,8 +33,8 @@ search_table_view = [
 
 search_plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"Average number of repeats"},
-        {"name":"memory","data":("object.memory_used_avg()*1e-6","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"Average number of repeats"},
+        {"name":"rate","data":("object.rate_avg()","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"(Search size)/(Sample Size)"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","1.0*object.op_size()/object.object_data('search_set_size',object.graph_size())"),"xaxis":"(Search size)/(Sample Size)"},
         ],
     "ivar":[
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
