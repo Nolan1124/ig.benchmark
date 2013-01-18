@@ -6,6 +6,5 @@ suites = [
     "f_threads",
     "f_size",
     "f_cache",
-    "f_cache_small",
     "f_disk",
     ]

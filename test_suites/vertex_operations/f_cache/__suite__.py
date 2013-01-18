@@ -11,10 +11,12 @@ counter = pow(2,20)
 graph_size = [counter]
 search_size = []
 
-search_cache = [[MB(1),MB(1)]]
-for i in range(5,20,5):
+
+search_cache = []
+for i in range(1,5,1):
     search_cache.append([MB(1),MB(i)])
     pass
+search_cache.append([[MB(1),MB(500)]])
 
 max_size = 17
 for i in range(10,max_size+1):
@@ -71,7 +73,7 @@ for engine in ["ig2","ig3"]:
             "graph_size":graph_size,
             "search_size":search_size,
             "page_size":[page_size],
-            "threads":[1],
+            "threads":[1,2,3,4],
             "index":["gr"],
             "txsize":[txsize],
             "engine":[engine],
