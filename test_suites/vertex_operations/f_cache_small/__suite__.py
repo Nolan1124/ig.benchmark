@@ -12,13 +12,9 @@ counter = pow(2,20)
 graph_size = [counter]
 search_size = []
 
-search_cache = [[KB(1),KB(1)]]
-
-for i in range(250,1000,125):
-    search_cache.append([KB(1),KB(i)])
-    pass
+search_cache = []
 for i in range(1000,5000,1000):
-    search_cache.append([KB(1),KB(i)])
+    search_cache.append([KB(1000),KB(i)])
     pass
 
 max_size = 17
