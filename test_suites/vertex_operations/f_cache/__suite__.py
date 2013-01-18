@@ -50,7 +50,7 @@ search_plot_view = {
     }
 
 cases = []
-for engine in ["ig2","ig3"]:
+for engine in ["ig3","ig2"]:
     cases.append({
         "name":"ingest",
         "description":"Vertex Ingestion for search purposes (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
