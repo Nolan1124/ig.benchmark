@@ -20,7 +20,8 @@ public class GraphVertexFactory extends VertexFactory
         return IndexManager.<bench.ig2.Vertex>getGraphIndex(Vertex.class.getName(),"value");
     }
 
-    public synchronized bench.ig2.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
+    //public synchronized bench.ig2.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
+    public bench.ig2.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
     {
         Vertex vertex = null;
         try

@@ -23,7 +23,8 @@ public class GraphVertexFactory extends VertexFactory
         return null;
     }
     
-    public synchronized bench.ig3.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
+    //public synchronized bench.ig3.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
+    public bench.ig3.Vertex findObject(GraphDatabase graphDB,Object object,long value) throws Exception
     {
         Query<bench.ig3.Vertex> query = graphDB.createQuery(bench.ig3.Vertex.class.getName(),String.format("value == %d",value));
         bench.ig3.Vertex vertex = null;
