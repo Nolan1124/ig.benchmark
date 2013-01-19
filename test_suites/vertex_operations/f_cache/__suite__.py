@@ -26,11 +26,13 @@ for i in range(10,max_size+1):
 search_table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
+    [{"sTitle":"Threads"},{"content":"object.threads()"}],
     [{"sTitle":"Search Size"},{"content":"object.op_size()"}],
     [{"sTitle":"Sample Size"},{"content":"object.object_data('search_set_size',object.graph_size())"}],
     [{"sTitle":"Cache Max(MB)"},{"content":"'%.0f'%(1e-3*object.cache_max())"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
+    
     ]
 
 search_plot_view = {
