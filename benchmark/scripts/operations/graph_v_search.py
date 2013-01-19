@@ -78,7 +78,7 @@ class operation(db_benchmark.operation):
                                         _v_size_set = _v_size_value[1]
                                     else:
                                         _v_size = _v_size_value
-                                        _v_size_set = graph_size
+                                        _v_size_set = self.graph_size
                                         pass
                                     #boot_file_path = self.config.BootFilePath[engine.name]
                                     #boot_file_name = os.path.join(boot_file_path,"bench.boot")
