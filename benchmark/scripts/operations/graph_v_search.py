@@ -99,83 +99,69 @@ class operation(db_benchmark.operation):
                                         profileName = profileName.replace(" ","_")
                                         pass
 
-                                    run_counter = 0
-                                    done = False
-                                    while not done:
-                                        if run_counter > 0:
-                                            print self.output_string("Retrying search (%d)"%(run_counter),base.Colors.Red,True)
-                                        self.ig_v_search(search_file_name,engine.name,self.propertyFile,_index,_v_size,self.graph_size,_threads,_txsize,profileName)
-                                        f = file(profileName,"r")
-                                        line = f.read()
-                                        data = eval(line)
-                                        f.close()
-                                        if(_v_size == data["opsize"]):
-                                            done = True
-                                        elif run_counter >= 3:
-                                            done = True
-                                        else:
-                                            os.remove(profileName)
-                                            pass
-                                        run_counter += 1
-                                        pass
                                     
+                                    self.ig_v_search(search_file_name,engine.name,self.propertyFile,_index,_v_size,self.graph_size,_threads,_txsize,profileName)
                                     if self.case_object:
-                                        f = file(profileName,"r")
-                                        line = f.read()
-                                        data = eval(line)
-                                        platform_object = self.db.create_unique_object(db_objects.model.platform,"name",data["os"])
-                                        index_object = self.db.create_unique_object(db_objects.model.index_type,"name",_index)
-
-                                        assert(_v_size == data["opsize"])
-                                        case_data_object = self.db.create_object(db_objects.model.case_data,
-                                                                                 timestamp=self.db.now_string(True),
-                                                                                 case_id=self.case_object.id,
-                                                                                 tag_id=self.tag_object.id,
-                                                                                 engine_id=engine.id,
-                                                                                 size=data["size"],
-                                                                                 time=data["time"],
-                                                                                 memory_init=data["mem_init"],
-                                                                                 memory_used=data["mem_used"],
-                                                                                 memory_committed=data["mem_committed"],
-                                                                                 memory_max=data["mem_max"],
-                                                                                 op_size=data["opsize"],
-                                                                                 rate=data["rate"],
-                                                                                 page_size=_page_size,
-                                                                                 cache_init=self.propertyFile.getInitCache(),
-                                                                                 cache_max=self.propertyFile.getMaxCache(),
-                                                                                 tx_size=_txsize,
-                                                                                 platform_id=platform_object.id,
-                                                                                 threads=_threads,
-                                                                                 index_id=index_object.id,
-                                                                                 status=1
-                                                                                 )
-                                        if _v_size_set != self.graph_size:
-                                            case_data_object.setDataValue("search_set_size",_v_size_set)
-                                            self.db.update(case_data_object)
+                                        if os.path.exists(profileName):
+                                            f = file(profileName,"r")
+                                            line = f.read()
+                                            data = eval(line)
+                                            if (_v_size == data["opsize"]):
+                                                platform_object = self.db.create_unique_object(db_objects.model.platform,"name",data["os"])
+                                                index_object = self.db.create_unique_object(db_objects.model.index_type,"name",_index)
+                                                
+                                                assert(_v_size == data["opsize"])
+                                                case_data_object = self.db.create_object(db_objects.model.case_data,
+                                                                                         timestamp=self.db.now_string(True),
+                                                                                         case_id=self.case_object.id,
+                                                                                         tag_id=self.tag_object.id,
+                                                                                         engine_id=engine.id,
+                                                                                         size=data["size"],
+                                                                                         time=data["time"],
+                                                                                         memory_init=data["mem_init"],
+                                                                                         memory_used=data["mem_used"],
+                                                                                         memory_committed=data["mem_committed"],
+                                                                                         memory_max=data["mem_max"],
+                                                                                         op_size=data["opsize"],
+                                                                                         rate=data["rate"],
+                                                                                         page_size=_page_size,
+                                                                                         cache_init=self.propertyFile.getInitCache(),
+                                                                                         cache_max=self.propertyFile.getMaxCache(),
+                                                                                         tx_size=_txsize,
+                                                                                         platform_id=platform_object.id,
+                                                                                         threads=_threads,
+                                                                                         index_id=index_object.id,
+                                                                                         status=1
+                                                                                         )
+                                                if _v_size_set != self.graph_size:
+                                                    case_data_object.setDataValue("search_set_size",_v_size_set)
+                                                    self.db.update(case_data_object)
+                                                    pass
+                                                case_data_key = case_data_object.generateKey()
+                                                case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
+                                                                                                    key=case_data_key,
+                                                                                                    case_id=self.case_object.id
+                                                                                                    )
+                                                if (len(case_data_stat_object) == 0):
+                                                    case_data_stat_object = self.db.create_unique_object(db_objects.model.case_data_stat,
+                                                                                                         "key",case_data_key,
+                                                                                                         case_id=self.case_object.id
+                                                                                                         )
+                                                else:
+                                                    case_data_stat_object = case_data_stat_object[0]
+                                                    pass
+                                                case_data_stat_object.addCounter()
+                                                case_data_stat_object.setRateStat(data["rate"])
+                                                case_data_stat_object.setTimeStat(data["time"])
+                                                case_data_stat_object.setMemInitStat(data["mem_init"])
+                                                case_data_stat_object.setMemUsedStat(data["mem_used"])
+                                                case_data_stat_object.setMemCommittedStat(data["mem_committed"])
+                                                case_data_stat_object.setMemMaxStat(data["mem_max"])
+                                                self.db.update(case_data_stat_object)
+                                                f.close()
+                                                os.remove(profileName)
+                                                pass
                                             pass
-                                        case_data_key = case_data_object.generateKey()
-                                        case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
-                                                                                            key=case_data_key,
-                                                                                            case_id=self.case_object.id
-                                                                                            )
-                                        if (len(case_data_stat_object) == 0):
-                                            case_data_stat_object = self.db.create_unique_object(db_objects.model.case_data_stat,
-                                                                                                 "key",case_data_key,
-                                                                                                 case_id=self.case_object.id
-                                                                                                 )
-                                        else:
-                                            case_data_stat_object = case_data_stat_object[0]
-                                            pass
-                                        case_data_stat_object.addCounter()
-                                        case_data_stat_object.setRateStat(data["rate"])
-                                        case_data_stat_object.setTimeStat(data["time"])
-                                        case_data_stat_object.setMemInitStat(data["mem_init"])
-                                        case_data_stat_object.setMemUsedStat(data["mem_used"])
-                                        case_data_stat_object.setMemCommittedStat(data["mem_committed"])
-                                        case_data_stat_object.setMemMaxStat(data["mem_max"])
-                                        self.db.update(case_data_stat_object)
-                                        f.close()
-                                        os.remove(profileName)
                                         pass
                                     pass
                                 pass
