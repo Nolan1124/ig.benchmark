@@ -35,6 +35,33 @@ class LocalConfig:
     pass
 
 class FrakConfig:
+    BootFilePath = {
+        "ig2":os.path.expanduser("/disk1/IG2_data/boot/"),
+        "ig3":os.path.expanduser("/disk1/IG3_data/boot/"),
+        }
+    
+    Disks = {
+        "ig2":[Disk("disk1","frak08-b11.objy.com","/disk1/IG2_data/data/")],
+        "ig3":[Disk("disk1","frak08-b11.objy.com","/disk2/IG3_data/data/")],
+        }
+    Root = {
+        "ig2":"/disk1/InfiniteGraph-2.1.0/linux86_64/",
+        "ig3":"/disk1/InfiniteGraph/3.0/"
+        }
+    Host = {
+        "ig2":"127.0.0.1",
+        "ig3":"127.0.0.1"
+        }
+    SourcePath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    BuildPath = os.path.join(SourcePath,"build")
+    BenchmarkJar = {
+        "ig2":os.path.join(BuildPath,"benchmark.2.jar"),
+        "ig3":os.path.join(BuildPath,"benchmark.3.jar"),
+        }
+    pass
+
+
+class FrakConfig__:
     BootFilePath = "/disk1/IG_data/"
     Disks = [
         Disk("disk1","frak08-b11.objy.com","/disk1/IG_data/")
@@ -49,8 +76,9 @@ class FrakConfig:
 
 
 
-Config = LocalConfig
-#Config = FrakConfig
+#Config = LocalConfig
+Config = FrakConfig
+
 
 def Setup():
     os.system("mkdir -p %s"%(Config.BootFilePath))
