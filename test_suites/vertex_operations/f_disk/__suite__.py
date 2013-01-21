@@ -46,3 +46,46 @@ for diskmap in [1,2,3,4]:
             }
         )
 
+for diskmap in [1,2,3,4]:
+    for engine in ["ig3","ig2"]:
+        cases.append(
+            {
+                "name":"ingest",
+                "description":"Vertex Ingestion as a function of number of disks threads.",
+                "type":"graph_v_ingest",
+                "data":
+                {
+                    "page_size":[14],
+                    "threads":[1],
+                    "index":["gr"],
+                    "txsize":[pow(2,14)],
+                    "engine":[engine],
+                    "new":1,
+                    "diskmap":diskmap,
+                    "graph_size":[pow(2,20)]
+                    },
+                "table_view":table_view,
+                "plot_view":plot_view
+                }
+            )
+        cases.append(
+            {
+                "name":"search",
+                "description":"Vertex Search as a function of number of disks/threads.",
+                "type":"graph_v_search",
+                "data":
+                {
+                    "page_size":[14],
+                    "search_size":[[pow(2,14),pow(2,14)],[pow(2,15),pow(2,15)]]
+                    "threads":[1,2,3,4,5,6,7,8],
+                    "index":["gr"],
+                    "txsize":[pow(2,14)],
+                    "engine":[engine],
+                    "new":1,
+                    "diskmap":diskmap,
+                    "graph_size":[pow(2,20)]
+                    },
+                "table_view":table_view,
+                "plot_view":plot_view
+                }
+            )
