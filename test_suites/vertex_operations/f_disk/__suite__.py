@@ -27,6 +27,7 @@ plot_view = {
 
 
 search_table_view = [
+    [{"sTitle":"Id"},{"content":"object.id"}],
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Disks"},{"content":"object.object_data('diskmap','n/a')"}],
     [{"sTitle":"Threads"},{"content":"object.threads()"}],
@@ -46,7 +47,7 @@ search_plot_view = {
         {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
         {"name":"Index Type","id":"object.index_type_id()","content":"object.index_type()"},
         {"name":"Disks","id":"object.object_data('diskmap',0)","content":"object.object_data('diskmap','n/a')"},
-        {"name":"Search Size","id":"object.op_size()","content":"object.op_size()"},
+   #     {"name":"Search Size","id":"object.op_size()","content":"object.op_size()"},
         {"name":"Cache (initial,max) (MB)","id":"object.cache_max()","content":"'(%.0f,%.0f)'%(object.cache_init()*1e-3,object.cache_max()*1e-3)"},
         ]
     }
