@@ -21,7 +21,7 @@ class operation(runnable.operation):
         runnable.operation.__init__(self)
         self.add_argument("engine","str","ig","engine (ig)")
         self.add_argument("page_size","eval",14,"page size page_size=pow(2,value) valid_values=[10,11,12,13,14,15,16]")
-        self.add_argument("diskmap",int,1,"disk map variable (for config).")
+        self.add_argument("diskmap",int,None,"disk map variable (for config).")
         self.config     = config.ig.Config
         self.rootResultsPath = os.path.abspath("results")
         self.version = None
