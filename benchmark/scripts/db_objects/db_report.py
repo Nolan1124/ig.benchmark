@@ -204,6 +204,7 @@ class PlotView:
                             counter += 1
                             pass
                         pass
+                    data.sort()
                     label = label[:len(label)-1]
                     structure = {"data":data,"label":label,"xaxis":x_axis_label}
                     f = file(os.path.join(location,"data","case.%s.%d.%sjson"%(name,case_object.id,data_key)),"w")

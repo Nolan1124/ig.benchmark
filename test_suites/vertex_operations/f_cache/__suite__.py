@@ -53,7 +53,7 @@ cases = []
 for engine in ["ig3","ig2"]:
     cases.append({
         "name":"ingest",
-        "description":"Vertex Ingestion for search purposes (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
+        "description":"Vertex Ingestion vs. cache size (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
         "type":"graph_v_ingest",
         "data":
         {
@@ -84,6 +84,28 @@ for engine in ["ig3","ig2"]:
         "table_view":search_table_view,
         "plot_view":search_plot_view
         })
+    pass
     
-    
-    
+ingest_cache = []
+ingest_cache.append([MB(1),MB(1)])
+ingest_cache.append([MB(1),MB(10)])
+ingest_cache.append([MB(1),MB(100)])
+ingest_cache.append([MB(1),MB(1000)])
+
+for engine in ["ig3","ig2"]:
+    cases.append({
+        "name":"ingest",
+        "description":"Vertex Ingestion vs. cache size (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
+        "type":"graph_v_ingest",
+        "data":
+        {
+            "graph_size":[pow(2,20),pow(2,21),pow(2,22),pow(2,23),pow(2,24)],
+            "page_size":[page_size],
+            "threads":[1,2,3,4],
+            "index":["none","gr"],
+            "txsize":[txsize],
+            "engine":[engine],
+            "new":1,
+            "cache":ingest_cache
+            }
+        })    
