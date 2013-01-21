@@ -32,6 +32,13 @@ class LocalConfig:
         "ig2":os.path.join(BuildPath,"benchmark.2.jar"),
         "ig3":os.path.join(BuildPath,"benchmark.3.jar"),
         }
+    DiskMap = {}
+    @classmethod 
+    def GetDiskMap(self):
+        if len(LocalConfig.DiskMap) == 0:
+            LocalConfig.DiskMap[1] = LocalConfig.Disks
+            pass
+        return LocalConfig.DiskMap
     pass
 
 class FrakConfig:
@@ -44,6 +51,54 @@ class FrakConfig:
         "ig2":[Disk("disk1","frak08-b11.objy.com","/disk1/IG2_data/data/")],
         "ig3":[Disk("disk1","frak08-b11.objy.com","/disk2/IG3_data/data/")],
         }
+    Disks_2 = {
+        "ig2":[
+            Disk("disk1","frak08-b11.objy.com","/disk1/IG2_data/data/"),
+            Disk("disk2","frak08-b11.objy.com","/disk2/IG2_data/data/"),
+        ],
+        "ig3":[
+            Disk("disk1","frak08-b11.objy.com","/disk2/IG3_data/data/"),
+            Disk("disk2","frak08-b11.objy.com","/disk2/IG3_data/data/"),
+            ]
+        }
+    Disks_3 = {
+        "ig2":[
+            Disk("disk1","frak08-b11.objy.com","/disk1/IG2_data/data/"),
+            Disk("disk2","frak08-b11.objy.com","/disk2/IG2_data/data/"),
+            Disk("disk3","frak08-b11.objy.com","/disk3/IG2_data/data/"),
+            ],
+        "ig3":[
+            Disk("disk1","frak08-b11.objy.com","/disk1/IG3_data/data/"),
+            Disk("disk2","frak08-b11.objy.com","/disk2/IG3_data/data/"),
+            Disk("disk3","frak08-b11.objy.com","/disk3/IG3_data/data/"),
+            ]
+        }
+    Disks_4 = {
+        "ig2":[
+            Disk("disk1","frak08-b11.objy.com","/disk1/IG2_data/data/"),
+            Disk("disk2","frak08-b11.objy.com","/disk2/IG2_data/data/"),
+            Disk("disk3","frak08-b11.objy.com","/disk3/IG2_data/data/"),
+            Disk("disk4","frak08-b11.objy.com","/disk4/IG2_data/data/"),
+            ],
+        "ig3":[
+            Disk("disk1","frak08-b11.objy.com","/disk1/IG3_data/data/"),
+            Disk("disk2","frak08-b11.objy.com","/disk2/IG3_data/data/"),
+            Disk("disk3","frak08-b11.objy.com","/disk3/IG3_data/data/"),
+            Disk("disk4","frak08-b11.objy.com","/disk4/IG3_data/data/"),
+            ]
+        }
+
+    DiskMap = {}
+
+    @classmethod 
+    def GetDiskMap(self):
+        if len(FrakConfig.DiskMap) == 0:
+            FrakConfig.DiskMap[1] = FrakConfig.Disks
+            FrakConfig.DiskMap[2] = FrakConfig.Disks_2
+            FrakConfig.DiskMap[3] = FrakConfig.Disks_3
+            FrakConfig.DiskMap[4] = FrakConfig.Disks_4
+        return FrakConfig.DiskMap
+        
     Root = {
         "ig2":"/disk1/InfiniteGraph-2.1.0/linux86_64/",
         "ig3":"/disk1/InfiniteGraph/3.0/"
@@ -51,6 +106,9 @@ class FrakConfig:
     Host = {
         "ig2":"127.0.0.1",
         "ig3":"127.0.0.1"
+        }
+    DiskMap = {
+        
         }
     SourcePath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     BuildPath = os.path.join(SourcePath,"build")
