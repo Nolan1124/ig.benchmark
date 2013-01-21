@@ -112,7 +112,7 @@ class operation(db_benchmark.operation):
                                                                                  index_id=index_object.id,
                                                                                  status=1
                                                                                  )
-                                        if self.datamap:
+                                        if self.diskmap:
                                             case_data_object.setDataValue("diskmap",self.diskmap)
                                             self.db.update(case_data_object)
                                             pass

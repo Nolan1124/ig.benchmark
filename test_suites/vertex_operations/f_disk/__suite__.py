@@ -2,7 +2,7 @@ name = "Disk"
 description = "Vertex Ingestion as a function of number of disks used."
 
 
-table_view = :[
+table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Threads"},{"content":"object.threads()"}],
     [{"sTitle":"Index Type"},{"content":"object.index_type()"}],
@@ -76,7 +76,7 @@ for diskmap in [1,2,3,4]:
                 "data":
                 {
                     "page_size":[14],
-                    "search_size":[[pow(2,14),pow(2,14)],[pow(2,15),pow(2,15)]]
+                    "search_size":[[pow(2,14),pow(2,14)],[pow(2,15),pow(2,15)]],
                     "threads":[1,2,3,4,5,6,7,8],
                     "index":["gr"],
                     "txsize":[pow(2,14)],
