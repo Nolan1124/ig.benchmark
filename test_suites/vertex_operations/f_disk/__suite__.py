@@ -97,24 +97,26 @@ for diskmap in [1,2,3,4]:
                 "plot_view":plot_view
                 }
             )
-        cases.append(
-            {
-                "name":"search",
-                "description":"Vertex Search as a function of number of disks/threads.",
-                "type":"graph_v_search",
-                "data":
+        for t in [1,2,3,4,5,6,7,8]:
+            cases.append(
                 {
-                    "page_size":[14],
-                    "search_size":[[pow(2,14),pow(2,14)],[pow(2,15),pow(2,15)]],
-                    "threads":[1,2,3,4,5,6,7,8],
-                    "index":["gr"],
-                    "txsize":[pow(2,14)],
-                    "engine":[engine],
-                    "new":1,
-                    "diskmap":diskmap,
-                    "graph_size":[pow(2,20)]
-                    },
-                "table_view":search_table_view,
-                "plot_view":search_plot_view
-                }
-            )
+                    "name":"search",
+                    "description":"Vertex Search as a function of number of disks/threads.",
+                    "type":"graph_v_search",
+                    "data":
+                    {
+                        "page_size":[14],
+                        "search_size":[[pow(2,20),pow(2,14)*t]],
+                        "threads":[t],
+                        "index":["gr"],
+                        "txsize":[pow(2,14)],
+                        "engine":[engine],
+                        "diskmap":diskmap,
+                        "graph_size":[pow(2,20)]
+                        },
+                    "table_view":search_table_view,
+                    "plot_view":search_plot_view
+                    }
+                )
+            
+            
