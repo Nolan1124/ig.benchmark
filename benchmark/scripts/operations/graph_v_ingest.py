@@ -33,7 +33,7 @@ class operation(db_benchmark.operation):
                     pass
                 pass
             pass
-        
+        self.diskmap = self.getOption_data(data,"diskmap")
         self.engine = self.getOption_data(data,"engine")
         self.index = self.getOption_data(data,"index")
         self.page_size = self.getOption_data(data,"page_size")
@@ -75,7 +75,7 @@ class operation(db_benchmark.operation):
                                         print self.output_string(str(elapsed),base.Colors.Red,False)
                                         self.ig_setup_Location(engine.name,self.propertyFile)
                                         pass
-                                    _s_ = "\tgraph(%s) ingest vertices index:%s page_size:%d tx_size:%d size:%d"%(engine.name,_index,_page_size,_txsize,_v_size)
+                                    _s_ = "\tgraph(%s) ingest vertices index:%s page_size:%d tx_size:%d size:%d diskmap:%s"%(engine.name,_index,_page_size,_txsize,_v_size,str(self.diskmap))
                                     print self.output_string(_s_,base.Colors.Blue,True)
                                     profileName = "test.profile"
                                     if self.tag_object:

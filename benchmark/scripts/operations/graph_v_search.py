@@ -45,7 +45,7 @@ class operation(db_benchmark.operation):
                     pass
                 pass
             pass
-        
+        self.diskmap = self.getOption_data(data,"diskmap")
         self.engine = self.getOption_data(data,"engine")
         self.index = self.getOption_data(data,"index")
         self.page_size = self.getOption_data(data,"page_size")

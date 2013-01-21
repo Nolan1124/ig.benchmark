@@ -4,6 +4,7 @@ description = "Vertex Ingestion as a function of number of disks used."
 
 table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
+    [{"sTitle":"Disks"},{"content":"object.object_data('diskmap','n/a')"}],
     [{"sTitle":"Threads"},{"content":"object.threads()"}],
     [{"sTitle":"Index Type"},{"content":"object.index_type()"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
