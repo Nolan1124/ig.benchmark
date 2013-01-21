@@ -85,7 +85,7 @@ class operation(db_benchmark.operation):
                                     self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,_threads,_txsize,profileName)
                                     if self.case_object:
                                         f = file(profileName,"r")
-                                        line = f.read()
+                                        line = f.readline()
                                         data = eval(line)
                                         platform_object = self.db.create_unique_object(db_objects.model.platform,"name",data["os"])
                                         index_object = self.db.create_unique_object(db_objects.model.index_type,"name",_index)
@@ -112,6 +112,10 @@ class operation(db_benchmark.operation):
                                                                                  index_id=index_object.id,
                                                                                  status=1
                                                                                  )
+                                        if self.datamap:
+                                            case_data_object.setDataValue("diskmap",self.diskmap)
+                                            self.db.update(case_data_object)
+                                            pass
                                         case_data_key = case_data_object.generateKey()
                                         case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
                                                                                             key=case_data_key,

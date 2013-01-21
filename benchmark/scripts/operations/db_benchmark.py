@@ -21,6 +21,7 @@ class operation(runnable.operation):
         runnable.operation.__init__(self)
         self.add_argument("engine","str","ig","engine (ig)")
         self.add_argument("page_size","eval",14,"page size page_size=pow(2,value) valid_values=[10,11,12,13,14,15,16]")
+        self.add_argument("diskmap",int,1,"disk map variable (for config).")
         self.config     = config.ig.Config
         self.rootResultsPath = os.path.abspath("results")
         self.version = None
@@ -28,6 +29,7 @@ class operation(runnable.operation):
         self.propertyFile = ig_property.PropertyFile("ig.properties")
         self.db_access = db_objects.db()
         self.db_access.create_database()
+        self.diskmap = None
         pass
     
     def initialize(self):
@@ -86,6 +88,16 @@ class operation(runnable.operation):
             propertyObject.properties["IG.Placement.ImplClass"]="com.infinitegraph.impl.plugins.adp.DistributedPlacement"
             pass
         disks = self.config.Disks[version]
+        if self.diskmap:
+            print "Using disk map:",self.diskmap
+            dmap = self.config.GetDiskMap()
+            if dmap.has_key(self.diskmap):
+                disks = dmap[self.diskmap][version]
+                pass
+            else:
+                print "Unable to find disk map key:",self.diskmap
+                pass
+            pass
         self.makedirs(self.config.BootFilePath[version])
         for disk in disks:
             self.makedirs(disk.device)
@@ -107,6 +119,16 @@ class operation(runnable.operation):
             propertyObject.properties["IG.Placement.PreferenceRankFile"] = os.path.join(self.config.BootFilePath[version],"Location.config")
             counter = 1
             disks = self.config.Disks[version]
+            if self.diskmap:
+                print "Using disk map:",self.diskmap
+                dmap = self.config.GetDiskMap()
+                if dmap.has_key(self.diskmap):
+                    disks = dmap[self.diskmap][version]
+                    pass
+                else:
+                    print "Unable to find disk map key:",self.diskmap
+                    pass
+                pass
             for disk in disks:
                 arguments = ["AddStorageLocation",
                              "-noTitle",
@@ -251,6 +273,7 @@ class operation(runnable.operation):
     def operate(self):
         if runnable.operation.operate(self):
             self.engine = self.getOption("engine")
+            self.diskmap = self.getSingleOption("diskmap")
             _page_size = self.getOption("page_size")
             self.setup_page_sizes(_page_size)
             return self.setup_engine_objects()
