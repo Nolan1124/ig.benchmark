@@ -159,6 +159,10 @@ class operation(db_benchmark.operation):
                                                         case_data_object.setDataValue("search_set_size",_v_size_set)
                                                         self.db.update(case_data_object)
                                                         pass
+                                                    if self.datamap:
+                                                        case_data_object.setDataValue("diskmap",self.diskmap)
+                                                        self.db.update(case_data_object)
+                                                        pass
                                                     case_data_key = case_data_object.generateKey()
                                                     case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
                                                                                                         key=case_data_key,
