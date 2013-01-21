@@ -20,6 +20,7 @@ plot_view = {
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
         {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
         {"name":"Index Type","id":"object.index_type_id()","content":"object.index_type()"},
+        {"name":"Disks","id":"object.object_data('diskmap',0)","content":"object.object_data('diskmap','n/a')"},
         ]
     }
 
