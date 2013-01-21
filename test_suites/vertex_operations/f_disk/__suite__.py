@@ -53,27 +53,6 @@ search_plot_view = {
 
 cases = []
 
-for diskmap in [1,2,3,4]:
-    cases.append(
-        {
-            "name":"ingest",
-            "description":"Vertex Ingestion as a function of number of disks threads.",
-            "type":"graph_v_ingest",
-            "data":
-            {
-                "page_size":[14],
-                "threads":[1,2,3,4,5,6,7,8],
-                "index":["none","gr"],
-                "txsize":[pow(2,14)],
-                "engine":["ig2","ig3"],
-                "new":1,
-                "diskmap":diskmap,
-                "graph_size":[pow(2,20)]
-                },
-            "table_view":table_view,
-            "plot_view":plot_view
-            }
-        )
 
 for diskmap in [1,2,3,4]:
     for engine in ["ig3","ig2"]:
@@ -106,7 +85,7 @@ for diskmap in [1,2,3,4]:
                     "data":
                     {
                         "page_size":[14],
-                        "search_size":[[pow(2,20),pow(2,14)*t]],
+                        "search_size":[[pow(2,14)*t,pow(2,20)]],
                         "threads":[t],
                         "index":["gr"],
                         "txsize":[pow(2,14)],
@@ -118,5 +97,30 @@ for diskmap in [1,2,3,4]:
                     "plot_view":search_plot_view
                     }
                 )
+            pass
+        pass
+    pass
             
             
+for diskmap in [1,2,3,4]:
+    cases.append(
+        {
+            "name":"ingest",
+            "description":"Vertex Ingestion as a function of number of disks threads.",
+            "type":"graph_v_ingest",
+            "data":
+            {
+                "page_size":[14],
+                "threads":[1,2,3,4,5,6,7,8],
+                "index":["none","gr"],
+                "txsize":[pow(2,14)],
+                "engine":["ig2","ig3"],
+                "new":1,
+                "diskmap":diskmap,
+                "graph_size":[pow(2,20)]
+                },
+            "table_view":table_view,
+            "plot_view":plot_view
+            }
+        )
+    pass
