@@ -159,7 +159,7 @@ class operation(db_benchmark.operation):
                                                         case_data_object.setDataValue("search_set_size",_v_size_set)
                                                         self.db.update(case_data_object)
                                                         pass
-                                                    if self.datamap:
+                                                    if self.diskmap:
                                                         case_data_object.setDataValue("diskmap",self.diskmap)
                                                         self.db.update(case_data_object)
                                                         pass
