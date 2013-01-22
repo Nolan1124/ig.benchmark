@@ -23,10 +23,10 @@ plot_view = {
 
 search_table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
-    [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
-    [{"sTitle":"Threads"},{"content":"'%dT'%(object.threads())"}],
-    [{"sTitle":"Search Size"},{"content":"object.op_size()"}],
-    [{"sTitle":"Sample Size"},{"content":"object.object_data('search_set_size',object.graph_size())"}],
+    [{"sTitle":"Page Size"},{"content":"object.page_size()"}],
+    #   [{"sTitle":"Threads"},{"content":"'%dT'%(object.threads())"}],
+   # [{"sTitle":"Search Size"},{"content":"object.op_size()"}],
+   # [{"sTitle":"Sample Size"},{"content":"object.object_data('search_set_size',object.graph_size())"}],
     [{"sTitle":"Cache Max(MB)"},{"content":"'%.0fMB'%(1e-3*object.cache_max())"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
@@ -35,15 +35,12 @@ search_table_view = [
 
 search_plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"(Search size)/(Sample Size) = pow(2,x)"},
-        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"(Search size)/(Sample Size) = pow(2,x)"},
+        {"name":"rate","data":("object.rate_avg()","math.log(1.0*object.page_size(),2)"),"xaxis":"Page Size = pow(2,x)"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(1.0*object.page_size(),2)"),"xaxis":"Page Size = pow(2,x)"},
         ],
     "ivar":[
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
         {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
-        {"name":"Threads","id":"object.threads()","content":"object.threads()"},
-        {"name":"Search Size","id":"object.op_size()","content":"object.op_size()"},
-        {"name":"Cache (initial,max) (MB)","id":"object.cache_max()","content":"'(%.0f,%.0f)'%(object.cache_init()*1e-3,object.cache_max()*1e-3)"},
         ]
     }
 
