@@ -58,7 +58,7 @@ for page_size in [16,15,14,13,12,11,10]:
             {
                 "page_size":[page_size],
                 "threads":[1,2,3,4,5,6,7,8],
-                "index":["none"],
+                "index":["gr","none"],
                 "txsize":[txsize],
                 "engine":["ig2","ig3"],
                 "new":1,
@@ -72,8 +72,7 @@ for page_size in [16,15,14,13,12,11,10]:
     pass
 
 
-#for page_size in [16,15,14,13,12,11,10]:
-if 0:
+for page_size in [16,15,14,13,12,11,10]:
     for engine in ["ig2","ig3"]:
         cases.append(
             {
