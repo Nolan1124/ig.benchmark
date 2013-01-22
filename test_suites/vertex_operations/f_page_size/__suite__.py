@@ -4,15 +4,15 @@ description = "Vertex Ingestion as a function of page size."
 table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Page size"},{"content":"object.page_size()"}],
-    [{"sTitle":"Index Type"},{"content":"object.index_type()"}],
+    [{"sTitle":"Index Type"},{"content":"'index:%s'%(object.index_type())"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
     ]
 
 plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","math.log(object.page_size(),2)"),"xaxis":"page size [log2]"},
-        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(object.page_size(),2)"),"xaxis":"page size [log2]"},
+        {"name":"rate","data":("object.rate_avg()","math.log(object.page_size(),2)"),"xaxis":"page size = pow(2,x)"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(object.page_size(),2)"),"xaxis":"page size = pow(2,x)"},
         ],
     "ivar":[
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
@@ -100,9 +100,9 @@ for page_size in [10,11,12,13,14,15,16]:
                 "data":
                 {
                     "graph_size":[graph_size],
-                    "search_size":[pow(2,16)],
+                    "search_size":[txsize],
                     "page_size":[page_size],
-                    "threads":[1,2,3,4],
+                    "threads":[1],
                     "index":["gr"],
                     "txsize":[txsize],
                     "engine":[engine],
