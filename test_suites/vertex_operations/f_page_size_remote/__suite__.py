@@ -55,7 +55,7 @@ for page_size in [16,15,14,13,12,11,10]:
             "data":
             {
                 "page_size":[page_size],
-                "threads":[1],
+                "threads":[1,2,3,4,5,6,7,8],
                 "index":["none"],
                 "txsize":[txsize],
                 "engine":["ig2","ig3"],
@@ -67,6 +67,11 @@ for page_size in [16,15,14,13,12,11,10]:
             "plot_view":plot_view
             }
         )
+    pass
+
+
+#for page_size in [16,15,14,13,12,11,10]:
+if 0:
     for engine in ["ig2","ig3"]:
         cases.append(
             {
@@ -88,8 +93,7 @@ for page_size in [16,15,14,13,12,11,10]:
                 "plot_view":plot_view
                 }
             )
-        if 0:
-            cases.append(
+        cases.append(
                 {
                     "name":"search",
                     "description":"Indexed Vertex Search as a function of page size (transaction_size=%d graph_size=%d)."%(txsize,graph_size),
