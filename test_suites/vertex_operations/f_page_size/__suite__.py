@@ -52,7 +52,7 @@ graph_size = pow(2,20)
 def MB(value):
     return value*1000
 cases = []
-for page_size in [10,11,12,13,14,15,16]:
+for page_size in [16,15,14,13,12,11,10]:
     cases.append(
         {
             "name":"ingest",
