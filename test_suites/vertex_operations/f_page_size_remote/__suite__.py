@@ -5,6 +5,7 @@ table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Page size"},{"content":"object.page_size()"}],
     [{"sTitle":"Index Type"},{"content":"'index:%s'%(object.index_type())"}],
+    [{"sTitle":"Threads"},{"content":"'%dT'%(object.threads())"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
     ]
@@ -18,6 +19,7 @@ plot_view = {
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
         {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
         {"name":"Index Type","id":"object.index_type_id()","content":"object.index_type()"},
+        {"name":"Threads","id":"object.threads()","content":"object.threads()"},
         ]
     }
 
