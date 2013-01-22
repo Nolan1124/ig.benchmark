@@ -7,4 +7,5 @@ suites = [
     "f_size",
     "f_cache",
     "f_disk",
+    "f_page_size_remote",
     ]
