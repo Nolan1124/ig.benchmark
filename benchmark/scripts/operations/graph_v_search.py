@@ -97,8 +97,8 @@ class operation(db_benchmark.operation):
                                     #boot_file_name = os.path.join(boot_file_path,"bench.boot")
                                     search_file_name = "searchlist.data"
                                     self.generate_random_searchlist(search_file_name,random,_v_size,_v_size_set)
-                                    print 
-                                    self.propertyFile.initialize()
+                                    print
+                                    self.initialize_property(engine.name)
                                     self.propertyFile.setInitCache(_cache[0])
                                     self.propertyFile.setMaxCache(_cache[1])
                                     self.propertyFile.properties["IG.PageSize"] = _page_size

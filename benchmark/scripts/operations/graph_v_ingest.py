@@ -34,6 +34,7 @@ class operation(db_benchmark.operation):
                 pass
             pass
         self.diskmap = self.getOption_data(data,"diskmap")
+        self.hostmap = self.getOption_data(data,"hostmap")
         self.engine = self.getOption_data(data,"engine")
         self.index = self.getOption_data(data,"index")
         self.page_size = self.getOption_data(data,"page_size")
@@ -52,15 +53,13 @@ class operation(db_benchmark.operation):
     def run_operation(self):
         for engine in self.engine_objects:
             for _index in self.index: 
-                boot_file_path = self.config.BootFilePath[engine.name]
-                boot_file_name = os.path.join(boot_file_path,"bench.boot")
                 for _page_size in self.page_size:
                     for _v_size in self.graph_size:
                         for _threads in self.threads:
                             for _txsize in self.txsize:
                                 for _cache in self.cache:
                                     print 
-                                    self.propertyFile.initialize()
+                                    self.initialize_property(engine.name)
                                     self.propertyFile.setInitCache(_cache[0])
                                     self.propertyFile.setMaxCache(_cache[1])
                                     self.propertyFile.properties["IG.PageSize"] = _page_size
