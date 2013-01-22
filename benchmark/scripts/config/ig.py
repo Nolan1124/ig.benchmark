@@ -10,13 +10,13 @@ class Disk:
 
 class LocalConfig:
     BootFilePath = {
-        "ig2":os.path.expanduser("~/IG2_data/boot/"),
-        "ig3":os.path.expanduser("~/IG3_data/boot/"),
+        "ig2":os.path.expanduser("/disk1/IG2_data/data/"),
+        "ig3":os.path.expanduser("/disk1/IG3_data/data/"),
         }
     
     Disks = {
-        "ig2":[Disk("disk1","127.0.0.1",os.path.expanduser("~/IG2_data/data/"))],
-        "ig3":[Disk("disk1","127.0.0.1",os.path.expanduser("~/IG3_data/data/"))],
+        "ig2":[Disk("disk1","127.0.0.1",os.path.expanduser("/disk1/IG2_data/data/"))],
+        "ig3":[Disk("disk1","127.0.0.1",os.path.expanduser("/disk1/IG3_data/data/"))],
         }
     Root = {
         "ig2":"/opt/local/InfiniteGraph-2.1.0_rc2/mac86_64/",
@@ -39,12 +39,24 @@ class LocalConfig:
             LocalConfig.DiskMap[1] = LocalConfig.Disks
             pass
         return LocalConfig.DiskMap
+    RemoteHost = {
+        "ig2":"frak08-b11.objy.com",
+        "ig3":"frak08-b11.objy.com"
+        }
+    HostMap = {}
+    @classmethod
+    def GetHostMap(self):
+        if len(FrakConfig.HostMap) == 0:
+            FrakConfig.HostMap["local"]  = FrakConfig.Host
+            FrakConfig.HostMap["remote"] = FrakConfig.RemoteHost
+            pass
+        return FrakConfig.HostMap
     pass
 
 class FrakConfig:
     BootFilePath = {
-        "ig2":os.path.expanduser("/disk1/IG2_data/boot/"),
-        "ig3":os.path.expanduser("/disk1/IG3_data/boot/"),
+        "ig2":os.path.expanduser("/disk1/IG2_data/data/"),
+        "ig3":os.path.expanduser("/disk1/IG3_data/data/"),
         }
     
     Disks = {
@@ -107,9 +119,19 @@ class FrakConfig:
         "ig2":"127.0.0.1",
         "ig3":"127.0.0.1"
         }
-    DiskMap = {
-        
+    RemoteHost = {
+        "ig2":"frak08-b11.objy.com",
+        "ig3":"frak08-b11.objy.com"
         }
+    HostMap = {}
+    @classmethod
+    def GetHostMap(self):
+        if len(FrakConfig.HostMap) == 0:
+            FrakConfig.HostMap["local"]  = FrakConfig.Host
+            FrakConfig.HostMap["remote"] = FrakConfig.RemoteHost
+            pass
+        return FrakConfig.HostMap
+    
     SourcePath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     BuildPath = os.path.join(SourcePath,"build")
     BenchmarkJar = {
@@ -134,8 +156,8 @@ class FrakConfig__:
 
 
 
-#Config = LocalConfig
-Config = FrakConfig
+Config = LocalConfig
+#Config = FrakConfig
 
 
 def Setup():

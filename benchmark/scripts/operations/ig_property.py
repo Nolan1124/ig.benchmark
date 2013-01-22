@@ -34,7 +34,7 @@ class PropertyFile:
     def getMaxCache(self):
         return self.properties["IG.SessionPool.ThreadBasedSessionPool.MaximumCacheSizeKb"]
         
-    def initialize(self):
+    def _initialize_(self):
         self.properties = self.defaults.copy()
         self.properties["IG.InstanceId"] = random.randint(1,65535-1)
         pass

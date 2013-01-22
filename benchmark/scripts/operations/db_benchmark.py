@@ -22,6 +22,7 @@ class operation(runnable.operation):
         self.add_argument("engine","str","ig","engine (ig)")
         self.add_argument("page_size","eval",14,"page size page_size=pow(2,value) valid_values=[10,11,12,13,14,15,16]")
         self.add_argument("diskmap",int,None,"disk map variable (for config).")
+        self.add_argument("hostmap","str",None,"host map variable (for config) [remote | local].")
         self.config     = config.ig.Config
         self.rootResultsPath = os.path.abspath("results")
         self.version = None
@@ -30,7 +31,11 @@ class operation(runnable.operation):
         self.db_access = db_objects.db()
         self.db_access.create_database()
         self.diskmap = None
+        self.hostmap = None
         pass
+
+
+        
     
     def initialize(self):
         if not os.path.exists(self.config.ig.IG2_Jar):
@@ -70,6 +75,8 @@ class operation(runnable.operation):
         env["PATH"] = os.path.join(self.config.Root[version],"bin") + ":" + path_list
         _arguments = [binary]
         _arguments += arguments
+        print _arguments
+        
         p = subprocess.Popen(_arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
         return  p.returncode
@@ -80,7 +87,29 @@ class operation(runnable.operation):
             os.makedirs(path)
             pass
         pass
-        
+
+    def initialize_property(self,version):
+        self.propertyFile._initialize_()
+        if self.hostmap != None:
+            disks = self.config.Disks[version]
+            if self.diskmap:
+                dmap = self.config.GetDiskMap()
+                disks = dmap[self.diskmap][version]
+                pass
+            hostname = self.config.GetHostMap()[self.hostmap][version]
+            self.propertyFile.properties["IG.LockServerHost"] = hostname
+            self.propertyFile.properties["IG.MasterDatabaseHost"] = hostname
+            self.propertyFile.properties["IG.MasterDatabasePath"] = "%s"%(disks[0].device)
+            pass
+        pass
+            
+    def get_boot_file_path(self,version):
+        if self.hostmap == None:
+            return self.config.BootFilePath[version]
+        hostmap = self.config.GetHostMap()
+        hostname = self.config.GetHostMap()[self.hostmap][version]
+        print "using host name:",hostname
+        return "%s::%s"%(hostname,self.config.BootFilePath[version])
 
     def ig_setup_placement(self,version,propertyObject):
         counter = 1
@@ -98,12 +127,21 @@ class operation(runnable.operation):
                 print "Unable to find disk map key:",self.diskmap
                 pass
             pass
-        self.makedirs(self.config.BootFilePath[version])
+        if self.hostmap == None:
+            self.makedirs(self.config.BootFilePath[version])
+            pass
         for disk in disks:
-            self.makedirs(disk.device)
+            if self.hostmap == None:
+                self.makedirs(disk.device)
+                pass
             if version == "ig2":
+                hostname = disk.host
+                if self.hostmap != None:
+                    hostmap = self.config.GetHostMap()
+                    hostname = self.config.GetHostMap()[self.hostmap][version]
+                    pass
                 storageName  = "storage_%d"%(counter)
-                propertyObject.properties["IG.Placement.Distributed.Location.%s"%(disk.name)]  = "%s::%s"%(disk.host,disk.device)
+                propertyObject.properties["IG.Placement.Distributed.Location.%s"%(disk.name)]  = "%s::%s"%(hostname,disk.device)
                 propertyObject.properties["IG.Placement.Distributed.StorageSpec.%s.ContainerRange"%(storageName)]="1:*"
                 propertyObject.properties["IG.Placement.Distributed.GroupStorage.GraphData"]="%s:%s"%(disk.name,storageName)
                 counter += 1
@@ -130,11 +168,17 @@ class operation(runnable.operation):
                     pass
                 pass
             for disk in disks:
+                hostname = disk.host
+                if self.hostmap != None:
+                    hostmap = self.config.GetHostMap()
+                    hostname = self.config.GetHostMap()[self.hostmap][version]
+                    pass
                 arguments = ["AddStorageLocation",
                              "-noTitle",
                              "-name",disk.name,
-                             "-storageLocation","%s::%s"%(disk.host,disk.device),
-                             "-bootfile",os.path.join(self.config.BootFilePath[version],"ig3.boot")
+                             "-storageLocation","%s::%s"%(hostname,disk.device),
+                             "-bootfile",os.path.join(self.get_boot_file_path(version),"ig3.boot")
+                             #os.path.join(self.config.BootFilePath[version],"ig3.boot")
                              ]
                 
                 if self.verbose == 0:
@@ -149,7 +193,7 @@ class operation(runnable.operation):
         env  = os.environ.copy()
         engine = None
         jarFile = None
-        propertyObject.properties["IG.BootFilePath"] = self.config.BootFilePath[version]
+        propertyObject.properties["IG.BootFilePath"] = self.get_boot_file_path(version) 
         propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
         propertyObject.generate()
         lib_path_list = [os.path.join(self.config.Root[version],"lib")]
@@ -174,7 +218,7 @@ class operation(runnable.operation):
         env  = os.environ.copy()
         engine = None
         jarFile = None
-        propertyObject.properties["IG.BootFilePath"] = self.config.BootFilePath[version]
+        propertyObject.properties["IG.BootFilePath"] = self.get_boot_file_path(version)
         propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
         propertyObject.generate()
         lib_path_list = [os.path.join(self.config.Root[version],"lib")]
@@ -203,7 +247,7 @@ class operation(runnable.operation):
         env  = os.environ.copy()
         engine = None
         jarFile = None
-        propertyObject.properties["IG.BootFilePath"] = self.config.BootFilePath[version]
+        propertyObject.properties["IG.BootFilePath"] = self.get_boot_file_path(version)
         propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
         propertyObject.generate()
         lib_path_list = [os.path.join(self.config.Root[version],"lib")]
@@ -274,6 +318,7 @@ class operation(runnable.operation):
         if runnable.operation.operate(self):
             self.engine = self.getOption("engine")
             self.diskmap = self.getSingleOption("diskmap")
+            self.hostmap = self.getSingleOption("hostmap")
             _page_size = self.getOption("page_size")
             self.setup_page_sizes(_page_size)
             return self.setup_engine_objects()

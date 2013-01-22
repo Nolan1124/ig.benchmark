@@ -58,7 +58,6 @@ function populate_time_factor_selection(data_name)
                       ($("#time_factor_id")).append('<option value='+data[i].id+'>'+data[i].name+'</option>');
                   }
               }
-              
               );
 }
 
@@ -86,7 +85,7 @@ function plot_current_data()
                    show:plot_is_show_legends_checked
                    }
            }
-           );   
+           );
 }
 
 function plot_data_using_name(name)

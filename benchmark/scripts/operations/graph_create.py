@@ -18,9 +18,7 @@ class operation(db_benchmark.operation):
     def run_operation(self):
         for engine in self.engine_objects:
             for _index in self.index: 
-                #boot_file_path = self.config.BootFilePath[engine.name]
-                #boot_file_name = os.path.join(boot_file_path,"bench.boot")
-                self.propertyFile.initialize()
+                self.initialize_property(engine.name)
                 for _page_size in self.page_size:
                     self.propertyFile.properties["IG.PageSize"] = _page_size
                     self.ig_setup_placement(engine.name,self.propertyFile)
