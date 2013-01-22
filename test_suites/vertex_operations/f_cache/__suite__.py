@@ -42,7 +42,7 @@ plot_view = {
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
         {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
         {"name":"Index Type","id":"object.index_type_id()","content":"object.index_type()"},
-        {"name":"Graph size","id":"object.graph_size()","content":"object.graph_size()"},
+        {"name":"Graph size","id":"object.graph_size()","content":"'%dM'%(int(1.0*object.graph_size()/pow(2,20)))"},
         {"name":"Threads","id":"object.threads()","content":"object.threads()"},
         ]
     }
@@ -50,10 +50,10 @@ plot_view = {
 search_table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
-    [{"sTitle":"Threads"},{"content":"object.threads()"}],
+    [{"sTitle":"Threads"},{"content":"'%dT'%(object.threads())"}],
     [{"sTitle":"Search Size"},{"content":"object.op_size()"}],
     [{"sTitle":"Sample Size"},{"content":"object.object_data('search_set_size',object.graph_size())"}],
-    [{"sTitle":"Cache Max(MB)"},{"content":"'%.0f'%(1e-3*object.cache_max())"}],
+    [{"sTitle":"Cache Max(MB)"},{"content":"'%.0fMB'%(1e-3*object.cache_max())"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
     
@@ -61,8 +61,8 @@ search_table_view = [
 
 search_plot_view = {
     "plot":[
-        {"name":"rate","data":("object.rate_avg()","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"log2 [(Search size)/(Sample Size)]"},
-        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"log2 [(Search size)/(Sample Size)]"},
+        {"name":"rate","data":("object.rate_avg()","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"(Search size)/(Sample Size) = pow(2,x)"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(1.0*object.op_size()/object.object_data('search_set_size',object.graph_size()),2)"),"xaxis":"(Search size)/(Sample Size) = pow(2,x)"},
         ],
     "ivar":[
         {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
