@@ -23,6 +23,30 @@ for i in range(10,max_size+1):
     search_size.append([pow(2,max_size),pow(2,i)])
     pass
 
+table_view = [
+    [{"sTitle":"Database engine"},{"content":"object.engine()"}],
+    [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
+    [{"sTitle":"Index Type"},{"content":"'index:%s'%(object.index_type())"}],
+    [{"sTitle":"Threads"},{"content":"'%dT'%(object.threads())"}],
+    [{"sTitle":"Cache Max(MB)"},{"content":"'%.0fMB'%(1e-3*object.cache_max())"}],
+    [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
+    [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
+    ]
+
+plot_view = {
+    "plot":[
+        {"name":"rate","data":("object.rate_avg()","math.log(object.cache_max()*1e-3,10)"),"xaxis":"Cache Size max = pow(10,x)"},
+        {"name":"memory","data":("object.memory_used_avg()*1e-6","math.log(object.cache_max()*1e-3,10)"),"xaxis":"Cache Size max = pow(10,x)"},
+        ],
+    "ivar":[
+        {"name":"Database engine","id":"object.engine_id()","content":"object.engine()"},
+        {"name":"Platform","id":"object.platform_id()","content":"object.platform()"},
+        {"name":"Index Type","id":"object.index_type_id()","content":"object.index_type()"},
+        {"name":"Graph size","id":"object.graph_size()","content":"object.graph_size()"},
+        {"name":"Threads","id":"object.threads()","content":"object.threads()"},
+        ]
+    }
+
 search_table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
@@ -53,7 +77,7 @@ cases = []
 for engine in ["ig3","ig2"]:
     cases.append({
         "name":"ingest",
-        "description":"Vertex Ingestion vs. cache size (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
+        "description":"Vertex Ingestion vs. cache size (txsize=%d,page_size=%d)"%(txsize,pow(2,page_size)),
         "type":"graph_v_ingest",
         "data":
         {
@@ -64,7 +88,9 @@ for engine in ["ig3","ig2"]:
             "txsize":[txsize],
             "engine":[engine],
             "new":1,
-            }
+            },
+        "table_view":table_view,
+        "plot_view":plot_view
         })
     cases.append({
         "name":"search",
@@ -95,7 +121,7 @@ ingest_cache.append([MB(1),MB(1000)])
 for engine in ["ig3","ig2"]:
     cases.append({
         "name":"ingest",
-        "description":"Vertex Ingestion vs. cache size (threads=%d,txsize=%d,page_size=%d)"%(threads,txsize,pow(2,page_size)),
+        "description":"Vertex Ingestion vs. cache size (txsize=%d,page_size=%d)"%(txsize,pow(2,page_size)),
         "type":"graph_v_ingest",
         "data":
         {
@@ -106,6 +132,8 @@ for engine in ["ig3","ig2"]:
             "txsize":[txsize],
             "engine":[engine],
             "new":1,
-            "cache":ingest_cache
-            }
+            "cache":ingest_cache,
+            },
+        "table_view":table_view,        
+        "plot_view":plot_view
         })    
