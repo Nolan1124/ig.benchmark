@@ -242,6 +242,7 @@ import show_db_config
 import graph_create
 import graph_v_ingest
 import graph_v_search
+import make_graph500
 
 def add_operation(operation):
     operations[operation.name] = operation
@@ -258,6 +259,7 @@ def populate():
         add_operation(graph_create.operation())
         add_operation(graph_v_ingest.operation())
         add_operation(graph_v_search.operation())
+        add_operation(make_graph500.operation())
         pass
     pass
 
