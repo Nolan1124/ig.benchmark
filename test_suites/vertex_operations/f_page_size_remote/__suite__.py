@@ -2,6 +2,7 @@ name = "Page size Remote"
 description = "Vertex Ingestion/Search as a function of page size using a remote machine."
 
 table_view = [
+    [{"sTitle":"Counter"},{"content":"object.counter"}],
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Page size"},{"content":"object.page_size()"}],
     [{"sTitle":"Index Type"},{"content":"'index:%s'%(object.index_type())"}],
@@ -48,12 +49,13 @@ graph_size = pow(2,20)
 def MB(value):
     return value*1000
 cases = []
-for page_size in [16,15,14,13,12,11,10]:
+#for page_size in [16,15,14,13,12,11,10]:
+if 0:
     cases.append(
         {
             "name":"ingest",
             "description":"Vertex Ingestion as a function of page size (transaction_size=%d graph_size=%d)."%(txsize,graph_size),
-                    "type":"graph_v_ingest",
+            "type":"graph_v_ingest",
             "data":
             {
                 "page_size":[page_size],
