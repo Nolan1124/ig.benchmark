@@ -11,10 +11,12 @@ class operation(base.operation):
         pass
 
     def run_make(self,base_dir):
+        cwd = os.getcwd()
         os.chdir(base_dir)
         arguments = ['make']
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr)
         p.wait()
+        os.chdir(cwd)
         pass
 
     def run(self):

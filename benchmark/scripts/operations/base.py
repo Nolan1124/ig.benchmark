@@ -243,6 +243,8 @@ import graph_create
 import graph_v_ingest
 import graph_v_search
 import make_graph500
+import generate_elist
+import graph_e_ingest
 
 def add_operation(operation):
     operations[operation.name] = operation
@@ -260,6 +262,8 @@ def populate():
         add_operation(graph_v_ingest.operation())
         add_operation(graph_v_search.operation())
         add_operation(make_graph500.operation())
+        add_operation(generate_elist.operation())
+        add_operation(graph_e_ingest.operation())
         pass
     pass
 

@@ -243,7 +243,7 @@ class operation(runnable.operation):
         p.wait()
         return  p.returncode
     
-    def ig_v_ingest(self,version,propertyObject,index,size,block,threads,txsize,profileName):
+    def ig_v_ingest(self,version,propertyObject,index,size,block,threads,txsize,profileName,map_oid):
         env  = os.environ.copy()
         engine = None
         jarFile = None
@@ -267,7 +267,40 @@ class operation(runnable.operation):
                      "-profile",profileName,
                      "-db",engine
                      ]
-       
+        if map_oid:
+            arguments.append("-uselocalmap")
+            pass
+        p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
+        p.wait()
+        return  p.returncode
+
+
+    def ig_e_pipeline_ingest(self,version,propertyObject,scale,threads,txsize,profileName,elist_name):
+        env  = os.environ.copy()
+        engine = None
+        jarFile = None
+        propertyObject.properties["IG.BootFilePath"] = self.get_boot_file_path(version)
+        propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
+        propertyObject.generate()
+        lib_path_list = [os.path.join(self.config.Root[version],"lib")]
+        lib = string.join(lib_path_list,":")
+        env["DYLD_LIBRARY_PATH"] = lib
+        env["LD_LIBRARY_PATH"] = lib
+        path_list = env["PATH"]
+        env["PATH"] = os.path.join(self.config.Root[version],"bin") + ":" + path_list
+        engine = version
+        jarFile = self.config.BenchmarkJar[version]
+        binary = "java"
+        arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation","accelerated_e_ingest","-property",propertyObject.fileName,"-verbose",str(4),
+                     "-scale",str(scale),
+                     "-eit",str(threads),
+                     "-tsize",str(txsize),
+                     "-profile",profileName,
+                     "-db",engine,
+                     "-uselocalmap",
+                     "-edgelist",elist_name
+                     ]
+        
         
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()

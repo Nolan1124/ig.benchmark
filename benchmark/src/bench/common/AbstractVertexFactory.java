@@ -29,7 +29,7 @@ public class AbstractVertexFactory
         if(objectMap != null)
         {
             this.objectMap.put(key,id);
-            System.out.printf("put %d,%d\n",key,id);
+            //System.out.printf("put %d,%d\n",key,id);
         }
     }
 
@@ -51,10 +51,19 @@ public class AbstractVertexFactory
             try
             {
                 System.out.println("Start reading cache.");
-                FileInputStream fileInputStream = new FileInputStream(fileName);
-                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-                objectMap = (HashMap<Long,Long>)objectInputStream.readObject();
-                objectInputStream.close();
+                FileReader fileReader = new FileReader(fileName);
+                BufferedReader buffer = new BufferedReader(fileReader);
+                String line = buffer.readLine();
+                while(line != null)
+                { 
+                    String[] str = line.split(",");
+                    Long a = Long.parseLong(str[0]);
+                    Long b = Long.parseLong(str[1]);
+                    //System.out.printf("%s,%s (%d,%d)\n",str[0],str[1],a,b);
+                    objectMap.put(a,b);
+                    line = buffer.readLine();
+                }
+                fileReader.close();
                 System.out.println("End reading cache.");
             }
             catch(FileNotFoundException e)
@@ -67,21 +76,20 @@ public class AbstractVertexFactory
     private  synchronized void serialize(String fileName) throws FileNotFoundException,IOException
     {
         System.out.println("Start serialize");
-        FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-        ObjectOutputStream stream = new ObjectOutputStream(fileOutputStream);
-        stream.writeObject(objectMap);
-
-         Iterator iterator =  objectMap.entrySet().iterator();
+        PrintWriter writer =  new PrintWriter(new FileWriter(fileName));
+        Iterator iterator =  objectMap.entrySet().iterator();
          while(iterator.hasNext())
          {
              Map.Entry pairs = (Map.Entry)iterator.next();
              long v = (Long)pairs.getKey();
              long id = (Long)pairs.getValue();
-             System.out.printf("%d,%d\n",v,id);
+             writer.printf("%d,%d\n",v,id);
          }
         
-        stream.close();
-        System.out.println("End serialize");
+         //stream.close();
+         writer.flush();
+         writer.close();
+         System.out.println("End serialize");
     }
     
     protected synchronized void remove(long key)

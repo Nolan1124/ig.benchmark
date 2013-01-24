@@ -30,10 +30,17 @@ public abstract class IGOperation extends bench.common.AbstractOperation
 
     protected void createWriteTransaction(boolean pipelined) throws Exception
     {
+        
         if(pipelined)
+        {
+            //System.out.println("\n\nCREATE PIPELINE TX");
             currentTransaction = this.graphDB.beginTransaction(AccessMode.READ_WRITE,this.edgePolicy);
+        }
         else
+        {
+            // System.out.println("\n\nCREATE NORMAL TX");
             currentTransaction = this.graphDB.beginTransaction(AccessMode.READ_WRITE);
+        }
         indexManager = this.vertexFactory.initializeIndex(this.graphDB);
         this.vertexFactory.startWrite();
     }
