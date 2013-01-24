@@ -68,9 +68,6 @@ class operation(db_benchmark.operation):
                         for _threads in self.threads:
                             for _txsize in self.txsize:
                                 for _cache in self.cache:
-                                    
-                                    
-                                    print 
                                     _index = "gr"
                                     _v_size = pow(2,_v_scale)
                                     self.initialize_property(engine.name)
@@ -93,25 +90,26 @@ class operation(db_benchmark.operation):
 
                                     _s_ = "\tgraph(%s) ingest vertices index:%s page_size:%d tx_size:%d size:%d diskmap:%s"%(engine.name,_index,_page_size,_txsize,_v_size,str(self.diskmap))
                                     print self.output_string(_s_,base.Colors.Blue,True)
-                                    profileName = "e_ingest.profile"
+                                    vprofileName = "v_ingest.profile"
+                                    eprofileName = "e_ingest.profile"
                                     elist_name  = "g500.elist"
+                                    now_string = self.db.now_string(True).replace(" ","_")
                                     if self.tag_object:
-                                        profileName = "e_ingest."+ self.db.now_string(True)  +  ".profile"
-                                        profileName = profileName.replace(" ","_")
-                                        elist_name = "g500.%s.elist"%(self.db.now_string(True))
+                                        vprofileName = "v_ingest."+ now_string  +  ".profile"
+                                        eprofileName = "e_ingest."+ now_string +  ".profile"
+                                        vprofileName = vprofileName.replace(" ","_")
+                                        eprofileName = eprofileName.replace(" ","_")
+                                        elist_name = "g500.%s.elist"%(now_string)
                                         pass
-                                    self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,_threads,_txsize,profileName,True)
+                                    self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,_threads,_txsize,vprofileName,True)
                                     generator = generate_elist.operation()
-
+                                    os.remove(elist_name)
                                    
                                     generator.run(_v_scale,_e_factor,self.a,self.b,self.c,self.d,elist_name)
-                                    self.ig_e_pipeline_ingest(engine.name,self.propertyFile,_v_scale,_threads,_txsize,profileName,elist_name)
+                                    self.ig_e_pipeline_ingest(engine.name,self.propertyFile,_v_scale,_threads,_txsize,eprofileName,elist_name)
 
-                                    
-                                   
-                                    
-                                    if 0: #self.case_object:
-                                        f = file(profileName,"r")
+                                    if self.case_object:
+                                        f = file(eprofileName,"r")
                                         line = f.readline()
                                         data = eval(line)
                                         platform_object = self.db.create_unique_object(db_objects.model.platform,"name",data["os"])
@@ -141,8 +139,9 @@ class operation(db_benchmark.operation):
                                                                                  )
                                         if self.diskmap:
                                             case_data_object.setDataValue("diskmap",self.diskmap)
-                                            self.db.update(case_data_object)
                                             pass
+                                        case_data_object.setDataValue("edge_factor",_e_factor)
+                                        self.db.update(case_data_object)
                                         case_data_key = case_data_object.generateKey()
                                         case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
                                                                                             key=case_data_key,
@@ -165,7 +164,8 @@ class operation(db_benchmark.operation):
                                         case_data_stat_object.setMemMaxStat(data["mem_max"])
                                         self.db.update(case_data_stat_object)
                                         f.close()
-                                        os.remove(profileName)
+                                        os.remove(eprofileName)
+                                        os.remove(vprofileName)
                                         pass
                                     pass
                                 pass

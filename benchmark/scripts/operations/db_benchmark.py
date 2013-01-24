@@ -300,8 +300,7 @@ class operation(runnable.operation):
                      "-uselocalmap",
                      "-edgelist",elist_name
                      ]
-        
-        
+        print string.join(arguments)
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
         return  p.returncode
