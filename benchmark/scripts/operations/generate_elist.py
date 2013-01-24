@@ -26,6 +26,7 @@ class operation(base.operation):
         graph_dir = os.path.join(base_dir,"graph500-2.1.4")
         exe = os.path.join(graph_dir,"make-edgelist")
         arguments = [exe,"-s",str(scale),"-e",str(factor),"-a",str(a),"-b",str(b),"-c",str(c),"-d",str(d),"-o",output]
+        print "Generate elist ",string.join(arguments)
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr)
         p.wait()
         return True

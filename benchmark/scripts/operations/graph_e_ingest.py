@@ -103,11 +103,9 @@ class operation(db_benchmark.operation):
                                         pass
                                     self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,_threads,_txsize,vprofileName,True)
                                     generator = generate_elist.operation()
-                                    os.remove(elist_name)
-                                   
                                     generator.run(_v_scale,_e_factor,self.a,self.b,self.c,self.d,elist_name)
                                     self.ig_e_pipeline_ingest(engine.name,self.propertyFile,_v_scale,_threads,_txsize,eprofileName,elist_name)
-
+                                    os.remove(elist_name)
                                     if self.case_object:
                                         f = file(eprofileName,"r")
                                         line = f.readline()
