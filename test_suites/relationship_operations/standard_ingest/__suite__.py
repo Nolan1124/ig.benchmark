@@ -44,7 +44,7 @@ cases = [
         "data":
         {
             "scale":graph_scale,
-            "factor":[2,3,4,5,6,7,8,9,10]
+            "factor":[2,3,4,5,6,7,8,9,10],
             "page_size":[page_size],
             "threads":threads,
             "index":["gr"],
