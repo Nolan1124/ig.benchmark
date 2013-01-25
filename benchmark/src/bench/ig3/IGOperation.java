@@ -5,7 +5,7 @@ import com.infinitegraph.policies.*;
 public abstract class IGOperation extends bench.common.AbstractOperation
 {
     protected GraphDatabase graphDB;
-    protected PolicyChain edgePolicy = new PolicyChain();
+    protected PolicyChain edgePolicy = new PolicyChain(new EdgePipeliningPolicy());
     protected VertexFactory vertexFactory = null;
     protected Object indexManager = null;
     protected Transaction currentTransaction = null;
