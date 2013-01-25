@@ -49,7 +49,7 @@ cases = [
             "threads":threads,
             "index":["none"],
             "txsize":[txsize],
-            "engine":["ig2","ig3"],
+            "engine":["ig3","ig2"],
             },
         "table_view":table_view,
         "plot_view":plot_view
