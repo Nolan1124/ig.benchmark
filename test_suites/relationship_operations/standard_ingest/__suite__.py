@@ -15,8 +15,7 @@ table_view = [
     [{"sTitle":"Database engine"},{"content":"object.engine()"}],
     [{"sTitle":"Graph Size"},{"content":"object.graph_size()"}],
     [{"sTitle":"Edge Size"},{"content":"object.op_size()"}],
-    [{"sTitle":"Threads"},{"content":"object.threads()"}],
-    [{"sTitle":"Index Type"},{"content":"object.index_type()"}],
+    [{"sTitle":"Edge Factor"},{"content":"'E:%d'%(object.object_data('edge_factor',0))"}],
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
     ]
