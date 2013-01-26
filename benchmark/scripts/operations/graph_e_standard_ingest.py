@@ -71,9 +71,6 @@ class operation(db_benchmark.operation):
                                     _index = "gr"
                                     _v_size = pow(2,_v_scale)
                                     self.initialize_property(engine.name)
-                                    self.propertyFile.properties["IG.Placement.Distributed.Pipelining.Groups"] = "ConnectorGroup"
-                                    self.propertyFile.properties["IG.Placement.Distributed.Pipelining.PipelinesPerStorageUnit"]=4
-                                    self.propertyFile.properties["IG.Placement.Distributed.Pipelining.EnablePipelining"]="true"
                                     self.propertyFile.setInitCache(_cache[0])
                                     self.propertyFile.setMaxCache(_cache[1])
                                     self.propertyFile.properties["IG.PageSize"] = _page_size
@@ -86,9 +83,7 @@ class operation(db_benchmark.operation):
                                     elapsed = (time.clock() - start)
                                     print self.output_string(str(elapsed),base.Colors.Red,False)
                                     self.ig_setup_Location(engine.name,self.propertyFile)
-                                
-
-                                    _s_ = "\tgraph(%s) ingest edges index:%s page_size:%d tx_size:%d size:%d diskmap:%s"%(engine.name,_index,_page_size,_txsize,_v_size,str(self.diskmap))
+                                    _s_ = "\tgraph(%s) standard ingest edges index:%s page_size:%d tx_size:%d size:%d diskmap:%s"%(engine.name,_index,_page_size,_txsize,_v_size,str(self.diskmap))
                                     print self.output_string(_s_,base.Colors.Blue,True)
                                     vprofileName = "v_ingest.profile"
                                     eprofileName = "e_ingest.profile"
@@ -104,7 +99,7 @@ class operation(db_benchmark.operation):
                                     self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,_threads,_txsize,vprofileName,True)
                                     generator = generate_elist.operation()
                                     generator.run(_v_scale,_e_factor,self.a,self.b,self.c,self.d,elist_name)
-                                    self.ig_e_pipeline_ingest(engine.name,self.propertyFile,_v_scale,_threads,_txsize,eprofileName,elist_name)
+                                    self.ig_e_standard_ingest(engine.name,self.propertyFile,_v_scale,_threads,_txsize,eprofileName,elist_name)
                                     os.remove(elist_name)
                                     if self.case_object:
                                         f = file(eprofileName,"r")

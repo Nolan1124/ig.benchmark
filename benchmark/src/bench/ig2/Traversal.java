@@ -51,7 +51,8 @@ class PathQualifier implements Qualifier{
     private long counter = 0;
     private long limit;
     
-    public PathQualifier(long limit){
+    public PathQualifier(long limit)
+    {
         this.limit = limit;
     }
 

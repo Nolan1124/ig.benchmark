@@ -340,6 +340,13 @@ public abstract class AbstractBenchmark
         return (vertexCount + edgeCount);
     }
 
+    public long standardEdgeIngest() throws Exception{
+        long edgeCount = 0;
+        if(this.graphDataSource.hasEdgeList())
+            edgeCount = this.ingestEdges(false);
+        return (edgeCount);
+    }
+
     public long acceleratedIngest() throws Exception{
         long vertexCount = this.ingestVertices();
         long edgeCount = 0;

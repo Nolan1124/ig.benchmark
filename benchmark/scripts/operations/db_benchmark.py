@@ -305,6 +305,38 @@ class operation(runnable.operation):
         p.wait()
         return  p.returncode
 
+    def ig_e_standard_ingest(self,version,propertyObject,scale,threads,txsize,profileName,elist_name):
+        env  = os.environ.copy()
+        engine = None
+        jarFile = None
+        propertyObject.properties["IG.BootFilePath"] = self.get_boot_file_path(version)
+        propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
+        propertyObject.generate()
+        lib_path_list = [os.path.join(self.config.Root[version],"lib")]
+        lib = string.join(lib_path_list,":")
+        env["DYLD_LIBRARY_PATH"] = lib
+        env["LD_LIBRARY_PATH"] = lib
+        path_list = env["PATH"]
+        env["PATH"] = os.path.join(self.config.Root[version],"bin") + ":" + path_list
+        engine = version
+        jarFile = self.config.BenchmarkJar[version]
+        binary = "java"
+        arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation","standard_e_ingest",
+                     "-property",propertyObject.fileName,
+                     "-verbose",str(40),
+                     "-scale",str(scale),
+                     "-eit",str(threads),
+                     "-tsize",str(txsize),
+                     "-profile",profileName,
+                     "-db",engine,
+                     "-uselocalmap",
+                     "-edgelist",elist_name
+                     ]
+        print string.join(arguments)
+        p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
+        p.wait()
+        return  p.returncode
+
     Known_Engines = {"ig2":"InfiniteGraph v2.1","ig3":"InfiniteGraph v3.0"}
     
     def is_known_engine(self,name):
