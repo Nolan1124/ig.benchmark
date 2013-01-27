@@ -96,11 +96,19 @@ class operation(db_benchmark.operation):
                                         eprofileName = eprofileName.replace(" ","_")
                                         elist_name = "g500.%s.elist"%(now_string)
                                         pass
+                                    try:
+                                        os.remove("object_id.map")
+                                    except:
+                                        pass
                                     self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,_threads,_txsize,vprofileName,True)
                                     generator = generate_elist.operation()
                                     generator.run(_v_scale,_e_factor,self.a,self.b,self.c,self.d,elist_name)
                                     self.ig_e_standard_ingest(engine.name,self.propertyFile,_v_scale,_threads,_txsize,eprofileName,elist_name)
                                     os.remove(elist_name)
+                                    try:
+                                        os.remove("object_id.map")
+                                    except:
+                                        pass
                                     if self.case_object:
                                         f = file(eprofileName,"r")
                                         line = f.readline()
