@@ -29,8 +29,9 @@ class Generate:
         for i in xrange(connections):
             numbers.append(self.getNumber(True))
             pass
-        for i in numbers:                       
-            print >> f,start,",",i
+        for i in numbers:
+            s = "%d,%d"%(start,i)
+            print >> f,s
             pass
         if limit < 0:
             for i in numbers:

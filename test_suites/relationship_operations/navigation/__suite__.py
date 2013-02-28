@@ -4,8 +4,8 @@ description = "Navigation as a function of graph density"
 threads = [1]
 page_size = [14]
 
-limit = 1000000
-connections = [2,3,4]
+limit = 100000
+connections = [2,4,6]
 
 cases = []
 table_view = [
@@ -29,22 +29,23 @@ plot_view = {
         ]
     }
 
-cases = [
-    {
+for c in connections:
+    cases = [
+        {
         "name":"graph_navigation",
         "description":"Graph Navigation",
         "type":"graph_navigate_dense",
         "data":
         {
-            "connections":connections,
-            "page_size":page_size,
-            "engine":["ig3","ig2"],
-            "depth":10,
-            "limit":limit
-            },
+        "connections":[c],
+        "page_size":page_size,
+        "engine":["ig3","ig2"],
+        "depth":10,
+        "limit":limit
+        },
         "table_view":table_view,
         "plot_view":plot_view
         }
-    ]
-   
+        ]
+    
    
