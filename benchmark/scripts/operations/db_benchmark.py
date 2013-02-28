@@ -28,8 +28,8 @@ class operation(runnable.operation):
         self.version = None
         self.engine  = "ig"
         self.propertyFile = ig_property.PropertyFile("ig.properties")
-        self.db_access = db_objects.db()
-        self.db_access.create_database()
+        self.db = db_objects.db()
+        self.db.create_database()
         self.diskmap = None
         self.hostmap = None
         pass
@@ -75,7 +75,7 @@ class operation(runnable.operation):
         env["PATH"] = os.path.join(self.config.Root[version],"bin") + ":" + path_list
         _arguments = [binary]
         _arguments += arguments
-        print _arguments
+        #print _arguments
         
         p = subprocess.Popen(_arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
@@ -300,12 +300,12 @@ class operation(runnable.operation):
                      "-uselocalmap",
                      "-edgelist",elist_name
                      ]
-        print string.join(arguments)
+        #print string.join(arguments)
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
         return  p.returncode
 
-    def ig_e_standard_ingest(self,version,propertyObject,scale,threads,txsize,profileName,elist_name):
+    def ig_e_standard_ingest(self,version,propertyObject,index,scale,threads,txsize,profileName,elist_name):
         env  = os.environ.copy()
         engine = None
         jarFile = None
@@ -321,7 +321,7 @@ class operation(runnable.operation):
         engine = version
         jarFile = self.config.BenchmarkJar[version]
         binary = "java"
-        arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation","standard_e_ingest",
+        arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation","standard_e_ingest","-index",index,
                      "-property",propertyObject.fileName,
                      "-verbose",str(40),
                      "-scale",str(scale),
@@ -332,7 +332,39 @@ class operation(runnable.operation):
                      "-uselocalmap",
                      "-edgelist",elist_name
                      ]
-        print string.join(arguments)
+        #print string.join(arguments)
+        p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
+        p.wait()
+        return  p.returncode
+
+    def ig_navigate(self,ttype,version,propertyObject,index,scale,threads,txsize,profileName,elist_name):
+        env  = os.environ.copy()
+        engine = None
+        jarFile = None
+        propertyObject.properties["IG.BootFilePath"] = self.get_boot_file_path(version)
+        propertyObject.fileName = os.path.join(os.getcwd(),"%s.properties"%(version))
+        propertyObject.generate()
+        lib_path_list = [os.path.join(self.config.Root[version],"lib")]
+        lib = string.join(lib_path_list,":")
+        env["DYLD_LIBRARY_PATH"] = lib
+        env["LD_LIBRARY_PATH"] = lib
+        path_list = env["PATH"]
+        env["PATH"] = os.path.join(self.config.Root[version],"bin") + ":" + path_list
+        engine = version
+        jarFile = self.config.BenchmarkJar[version]
+        binary = "java"
+        arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation",ttype,"-index",index,
+                     "-property",propertyObject.fileName,
+                     "-verbose",str(40),
+                     "-scale",str(scale),
+                     "-eit",str(threads),
+                     "-tsize",str(txsize),
+                     "-profile",profileName,
+                     "-db",engine,
+                     "-uselocalmap",
+                     "-edgelist",elist_name
+                     ]
+        #print string.join(arguments)
         p = subprocess.Popen(arguments,stdout=sys.stdout,stderr=sys.stderr,env=env)
         p.wait()
         return  p.returncode
@@ -347,7 +379,7 @@ class operation(runnable.operation):
         name = name.lower()
         engine = None
         if self.is_known_engine(name):
-            engine = self.db_access.create_unique_object(db_objects.model.engine,"name",name,description=self.Known_Engines[name])
+            engine = self.db.create_unique_object(db_objects.model.engine,"name",name,description=self.Known_Engines[name])
             pass
         return engine
 

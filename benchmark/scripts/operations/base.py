@@ -246,6 +246,9 @@ import make_graph500
 import generate_elist
 import graph_e_ingest
 import graph_e_standard_ingest
+import graph_e_ring_ingest
+import graph_navigate_ring
+import graph_navigate_dense
 
 def add_operation(operation):
     operations[operation.name] = operation
@@ -266,6 +269,9 @@ def populate():
         add_operation(generate_elist.operation())
         add_operation(graph_e_ingest.operation())
         add_operation(graph_e_standard_ingest.operation())
+        add_operation(graph_e_ring_ingest.operation())
+        add_operation(graph_navigate_ring.operation())
+        add_operation(graph_navigate_dense.operation())
         pass
     pass
 
