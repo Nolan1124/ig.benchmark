@@ -97,7 +97,7 @@ public abstract class Traversal extends IGOperation{
     
     public void operate() throws Exception{
         PolicyChain policies = new PolicyChain(new MaximumPathDepthPolicy(10));
-        MaximumResultCountPolicy p = new MaximumResultCountPolicy(100000);
+        MaximumResultCountPolicy p = new MaximumResultCountPolicy(10000000);
         policies.addPolicy(p);
         
         this.counter = 0;
