@@ -6,7 +6,7 @@ txsize  = pow(2,14)
 page_size = 14
 
 graph_scale = []
-for i in range(16,20):
+for i in range(19,20):
     graph_scale.append(i)
     pass
 
@@ -19,7 +19,6 @@ table_view = [
     [{"sTitle":"Rate (v/s)"},{"content":"'%.2f'%(object.rate_avg())"}],
     [{"sTitle":"Heap Memory (MB)"},{"content":"'%.3f'%(object.memory_used_avg()*1e-6)"}],
     ]
-
 
 plot_view = {
     "plot":[
@@ -48,7 +47,7 @@ cases = [
             "threads":threads,
             "index":["gr"],
             "txsize":[txsize],
-            "engine":["ig3","ig2"],
+            "engine":["ig2","ig3"],
             },
         "table_view":table_view,
         "plot_view":plot_view

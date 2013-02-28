@@ -4,4 +4,5 @@ suites = [
     "pipeline_ingest",
     "standard_ingest",
     "navigation",
+    "navigation.100",
     ]
