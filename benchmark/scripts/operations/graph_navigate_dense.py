@@ -79,19 +79,31 @@ class operation(db_benchmark.operation):
                         print self.output_string(str(elapsed),base.Colors.Red,False)
                         self.ig_setup_Location(engine.name,self.propertyFile)
                         
+                        _s_ = "\t\tgraph(%s) standard ingest vertices index:%s page_size:%d tx_size:%d size:%d diskmap:%s"%(engine.name,_index,_page_size,_txsize,_v_size,str(self.diskmap))
+                        print self.output_string(_s_,base.Colors.Blue,True)
+                        sys.stdout.flush()
+                        self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,1,_txsize,"vprofileName",True)
+                        print self.output_string("done",base.Colors.Blue,True)
+                        sys.stdout.flush()
+                        
                         _s_ = "\t\tgraph(%s) standard ingest edges index:%s page_size:%d tx_size:%d size:%d diskmap:%s"%(engine.name,_index,_page_size,_txsize,_v_size,str(self.diskmap))
                         print self.output_string(_s_,base.Colors.Blue,True)
-
-                        self.ig_v_ingest(engine.name,self.propertyFile,_index,_v_size,0,1,_txsize,"vprofileName",True)
+                        sys.stdout.flush()
                         self.ig_e_standard_ingest(engine.name,self.propertyFile,_index,_v_size,1,_txsize,"eprofileName",edgeFile)
-
-                       
+                        print self.output_string("done",base.Colors.Blue,True)
+                        sys.stdout.flush()
+                                            
                         f = file("search.txt","w")
                         print >> f,"0,1"
                         f.flush()
                         f.close()
                         navigate_profileName = "navigate.profile"
+                        _s_ = "\t\tNavigation"
+                        print self.output_string(_s_,base.Colors.Blue,True)
+                        sys.stdout.flush()
                         self.ig_navigate("dfs",engine.name,self.propertyFile,_index,_v_size,1,_txsize,navigate_profileName,"search.txt")
+                        print self.output_string("done",base.Colors.Blue,True)
+                        sys.stdout.flush()
                      
                         if self.case_object:
                             f = file(navigate_profileName,"r")
