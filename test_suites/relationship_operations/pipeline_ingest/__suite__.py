@@ -71,6 +71,7 @@ cases = [
             },
         "table_view":table_view,
         "plot_view":plot_view_vs_threads
+        #"plot_view":plot_view
         }
     ]
    
