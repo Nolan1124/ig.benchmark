@@ -39,7 +39,10 @@ class ResultQualifier implements Qualifier{
     
     public boolean qualify(Path currentPath)
     {
-        if(currentPath.getFinalHop().getVertex().getId() == this.id){
+        boolean status = (currentPath.getFinalHop().getVertex().getId() == this.id);
+        if(status)
+        {
+            System.out.printf("RESULT Q status=%d\n",status);
             this.counter++;
             return true;
         }
@@ -62,9 +65,13 @@ class PathQualifier implements Qualifier{
     
     public boolean qualify(Path currentPath){
         this.counter += 1;
-        if(this.limit < this.counter){
-            return false;
+        /*
+        if((counter % 100) == 0)
+        {
+            bench.ig2.Vertex v = (bench.ig2.Vertex)(currentPath.getFinalHop().getVertex());
+            System.out.printf("(%d) [%d] \n",counter,v.getValue());
         }
+        */
         return true;
     }
 }
@@ -81,7 +88,6 @@ public abstract class Traversal extends IGOperation{
 
     public void initialize(bench.common.AbstractBenchmark benchmark) throws Exception{
         super.initialize(benchmark);
-        searchList = benchmark.getSearchList(this.id);
         this.limit = benchmark.getLimit();
     }
 
@@ -89,16 +95,23 @@ public abstract class Traversal extends IGOperation{
     
     public void operate() throws Exception{
         this.counter = 0;
-        if(this.searchList != null){
-            for(bench.common.LongPair vertexPair:searchList){
+        List<LongPair> vPairList = this.dataSource.getNextEdgePair(1);
+        if(vPairList != null){
+            for(bench.common.LongPair vertexPair:vPairList){
                 this.createReadTransaction();
-                long firstId  = vertexPair.getFirst();
-                long secondId = vertexPair.getSecond();
-                bench.ig2.Vertex first = (bench.ig2.Vertex)this.graphDB.getVertex(firstId);
+                long first  = vertexPair.getFirst();
+                com.infinitegraph.Vertex firstVertex = vertexFactory.findObject(this.graphDB,this.indexManager,first);
+                if(firstVertex == null)
+                {
+                    long id = vertexFactory.getVertexId(first);
+                    firstVertex = this.graphDB.getVertex(id);
+                }
+                System.out.printf("Start from %d [%s] oid:%d\n",first,firstVertex,firstVertex.getId());
                 BenchResultsHandler resultPrinter = new BenchResultsHandler();
-                ResultQualifier qualifier = new ResultQualifier(secondId);
+                // ResultQualifier qualifier = new ResultQualifier(secondVertex.getId());
                 PathQualifier pathQualifier = new PathQualifier(this.limit);
-                Navigator navigator = first.navigate(this.getGuide(),pathQualifier, qualifier, resultPrinter);
+                Qualifier qualifier = Qualifier.FOREVER;
+                Navigator navigator = firstVertex.navigate(this.getGuide(),pathQualifier, qualifier, resultPrinter);
                 navigator.start();
                 navigator.stop();
                 this.counter += pathQualifier.getCounter();
@@ -106,6 +119,5 @@ public abstract class Traversal extends IGOperation{
             }
         }
     }
-    
     
 }

@@ -3,20 +3,19 @@ import com.infinitegraph.*;
 import com.infinitegraph.navigation.*;
 import java.util.*;
 import bench.common.*;
+import com.infinitegraph.policies.PolicyChain;
+import com.infinitegraph.navigation.policies.*;
+import com.infinitegraph.navigation.policies.MaximumResultCountPolicy;
+
 
 class BenchResultsHandler implements NavigationResultHandler
 {
     private long counter = 0;
-
     public long getCounter()
     {
         return this.counter;
     }
-
-    public BenchResultsHandler()
-    {
-    }
-    
+    public BenchResultsHandler(){}
     public void handleResultPath(Path result, Navigator navigator)
     {
         for(Hop h : result)
@@ -26,29 +25,26 @@ class BenchResultsHandler implements NavigationResultHandler
         }
     }
 
-    public void	handleNavigatorFinished(Navigator navigator)
+    public void handleNavigatorFinished(Navigator navigator)
     {
-        
     }
 }
 
-class ResultQualifier implements Qualifier
-{
+class ResultQualifier implements Qualifier{
     private long counter = 0;
     private long id;
-    public ResultQualifier(long id)
-    {
+    public ResultQualifier(long id){
         this.id = id;
     }
     
-    public long getCounter()
-    {
+    public long getCounter(){
         return this.counter;
     }
     
     public boolean qualify(Path currentPath)
     {
-        if(currentPath.getFinalHop().getVertex().getId() == this.id)
+        boolean status = (currentPath.getFinalHop().getVertexHandle().getId() == this.id);       
+        if(status)
         {
             this.counter++;
             return true;
@@ -57,66 +53,73 @@ class ResultQualifier implements Qualifier
     }
 }
 
-class PathQualifier implements Qualifier
-{
+class PathQualifier implements Qualifier{
     private long counter = 0;
     private long limit;
-    
     public PathQualifier(long limit)
     {
         this.limit = limit;
     }
 
-    public long getCounter()
-    {
+    public long getCounter(){
         return this.counter;
     }
     
-    public boolean qualify(Path currentPath)
-    {
+    public boolean qualify(Path currentPath){
         this.counter += 1;
-        if(this.limit < this.counter)
+        /*
+        if((counter % 100) == 0)
         {
-            return false;
+            bench.ig3.Vertex v = (bench.ig3.Vertex)(currentPath.getFinalHop().getVertex());
+            System.out.printf("(%d) [%d] \n",counter,v.getValue());
         }
+        */
         return true;
     }
 }
 
 
 
-public abstract class Traversal extends IGOperation
-{
+public abstract class Traversal extends IGOperation{
     private List<LongPair> searchList = null;
     private int limit;
     
-    public Traversal(int id,bench.common.GraphDataSource dataSource,int operationsPerTransaction)
-    {
+    public Traversal(int id,bench.common.GraphDataSource dataSource,int operationsPerTransaction){
         super(id,dataSource,operationsPerTransaction);
     }
 
-    public void initialize(bench.common.AbstractBenchmark benchmark) throws Exception
-    {
+    public void initialize(bench.common.AbstractBenchmark benchmark) throws Exception{
         super.initialize(benchmark);
-        searchList = benchmark.getSearchList(this.id);
         this.limit = benchmark.getLimit();
     }
 
     public abstract Guide getGuide();
     
-    public void operate() throws Exception
-    {
+    public void operate() throws Exception{
+        PolicyChain policies = new PolicyChain(new MaximumPathDepthPolicy(10));
+        MaximumResultCountPolicy p = new MaximumResultCountPolicy(100000);
+        policies.addPolicy(p);
+        
         this.counter = 0;
-        if(this.searchList != null){
-            for(bench.common.LongPair vertexPair:searchList){
+        List<LongPair> vPairList = this.dataSource.getNextEdgePair(this.operationsPerTransaction);
+        if(vPairList != null){
+            for(bench.common.LongPair vertexPair:vPairList){
                 this.createReadTransaction();
-                long firstId  = vertexPair.getFirst();
-                long secondId = vertexPair.getSecond();
-                bench.ig3.Vertex first = (bench.ig3.Vertex)this.graphDB.getVertex(firstId);
+                GraphView view = null;//new GraphView();
+                long first  = vertexPair.getFirst();
+                com.infinitegraph.Vertex firstVertex = vertexFactory.findObject(this.graphDB,this.indexManager,first);
+                if(firstVertex == null)
+                {
+                    long id = vertexFactory.getVertexId(first);
+                    firstVertex = this.graphDB.getVertex(id);
+                }
+                System.out.printf("Start from %d [%s] oid:%d\n",first,firstVertex,firstVertex.getId());
+              
                 BenchResultsHandler resultPrinter = new BenchResultsHandler();
-                ResultQualifier qualifier = new ResultQualifier(secondId);
                 PathQualifier pathQualifier = new PathQualifier(this.limit);
-                Navigator navigator = first.navigate(this.getGuide(),pathQualifier, qualifier, resultPrinter);
+                Qualifier qualifier = Qualifier.FOREVER;
+                Navigator navigator = firstVertex.navigate(view,this.getGuide(),pathQualifier, qualifier,policies, resultPrinter);
+                //Navigator navigator = firstVertex.navigate(view,this.getGuide(),Qualifier.FOREVER, Qualifier.ANY,policies, resultPrinter);
                 navigator.start();
                 navigator.stop();
                 this.counter += pathQualifier.getCounter();

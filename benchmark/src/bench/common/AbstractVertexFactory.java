@@ -50,7 +50,7 @@ public class AbstractVertexFactory
         {
             try
             {
-                System.out.println("Start reading cache.");
+                //  System.out.print("Start reading cache.");
                 FileReader fileReader = new FileReader(fileName);
                 BufferedReader buffer = new BufferedReader(fileReader);
                 String line = buffer.readLine();
@@ -64,7 +64,7 @@ public class AbstractVertexFactory
                     line = buffer.readLine();
                 }
                 fileReader.close();
-                System.out.println("End reading cache.");
+                //System.out.println(" End.");
             }
             catch(FileNotFoundException e)
             {
@@ -75,7 +75,7 @@ public class AbstractVertexFactory
     
     private  synchronized void serialize(String fileName) throws FileNotFoundException,IOException
     {
-        System.out.println("Start serialize");
+        // System.out.print ("\t\tStart serialize");
         PrintWriter writer =  new PrintWriter(new FileWriter(fileName));
         Iterator iterator =  objectMap.entrySet().iterator();
          while(iterator.hasNext())
@@ -89,7 +89,7 @@ public class AbstractVertexFactory
          //stream.close();
          writer.flush();
          writer.close();
-         System.out.println("End serialize");
+         //System.out.println(" End");
     }
     
     protected synchronized void remove(long key)

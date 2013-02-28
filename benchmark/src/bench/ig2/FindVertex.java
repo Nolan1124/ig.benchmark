@@ -41,6 +41,7 @@ public class FindVertex extends IGOperation
                 for(Long vertexID:searchList)
                 {
                     Vertex vertex = vertexFactory.findObject(this.graphDB,indexManager,vertexID);
+                    System.out.printf("Find V(%d) - >(%d)\n",vertexID,vertex.getId());
                     this.counter += 1;
                     if(vertex != null)
                         elementsFound++;

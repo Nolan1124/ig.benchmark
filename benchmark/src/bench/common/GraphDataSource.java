@@ -29,7 +29,6 @@ public class GraphDataSource
     
     public boolean initialize() throws FileNotFoundException
     {
-        
         if(edgeListPath != null)
             this.edgeListReader = new BufferedReader(new FileReader(edgeListPath));
         if(searchListPath != null)
@@ -76,11 +75,12 @@ public class GraphDataSource
         try
         {
             String line = reader.readLine();
+            //System.out.printf("LINE: %s\n",line);
             if(line != null)
             {
                 String[] fields = line.split(",");
-                long first  = Long.parseLong(fields[0]);
-                long second  = Long.parseLong(fields[1]);
+                long first  = Long.parseLong(fields[0].trim());
+                long second  = Long.parseLong(fields[1].trim());
                 edgePair = new LongPair(first,second);
             }
         }

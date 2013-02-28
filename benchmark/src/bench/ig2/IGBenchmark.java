@@ -226,13 +226,13 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
 
     public long dfsTraverse() throws Exception
     {
-        this.search(true);
+        //this.search(true);
         return this.run("DFS Traversal",dfsEvent,this.numberOfThreads,new DFSTraversalFactory());
     }
     
     public long bfsTraverse() throws Exception
     {
-        this.search(true);
+        //this.search(true);
         return this.run("BFS Traversal",bfsEvent,this.numberOfThreads,new BFSTraversalFactory());
     }
     

@@ -131,7 +131,8 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
             this.deleteDB();
             GraphFactory.create(this.getDbName(),this.getPropertyFileName());
             Transaction transaction = null;
-            try{
+            try
+            {
                 this.graphDB = GraphFactory.open(this.getDbName(),this.getPropertyFileName());
                 transaction = this.createWriteTransaction();
                 this.vertexFactory.createIndex(this.graphDB);
@@ -142,7 +143,8 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
                 ie.printStackTrace();
                 status = false;
             }
-            finally{
+            finally
+            {
                 if(transaction != null)
                     transaction.complete();
             }
@@ -180,31 +182,27 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
     }
     
     
-    public boolean openDB() throws Exception
-    {
+    public boolean openDB() throws Exception{
         try{
             this.graphDB = GraphFactory.open(this.getDbName(),this.getPropertyFileName());
             Transaction transaction = this.createWriteTransaction();
             this.vertexFactory.initializeIndex(this.graphDB);
             transaction.commit();
         }
-        catch(Exception e)
-        {
+        catch(Exception e){
             e.printStackTrace();
             return false;
         }
         return true;
     }
     
-    public boolean closeDB()
-    {
+    public boolean closeDB(){
         if(this.graphDB != null)
             this.graphDB.close();
         return true;
     }
 
-    protected long ingestVertices() throws Exception
-    {
+    protected long ingestVertices() throws Exception{
         return super.ingestVertices("Ingest Vertices",new IngestVertexFactory());
     }
 
@@ -220,7 +218,7 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
     {
         return super.search("Search Vertices",saveSearchResults,new FindVertexFactory());
     }
-    
+        
     public long read() throws Exception
     {
         return this.run("Read Graph",readEvent,this.numberOfThreads,new ReaderFactory());
@@ -228,13 +226,13 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
 
     public long dfsTraverse() throws Exception
     {
-        this.search(true);
+        //this.search(true);
         return this.run("DFS Traversal",dfsEvent,this.numberOfThreads,new DFSTraversalFactory());
     }
     
     public long bfsTraverse() throws Exception
     {
-        this.search(true);
+        //this.search(true);
         return this.run("BFS Traversal",bfsEvent,this.numberOfThreads,new BFSTraversalFactory());
     }
     
@@ -247,8 +245,7 @@ public class IGBenchmark extends bench.common.AbstractBenchmark
         List<LongPair> removeList = this.searchListContainer.get(0);
         int sizePerThread = removeList.size()/this.numberOfThreads;
         this.searchListContainer.clear();
-        for(int i=0;i<this.numberOfThreads;i++)
-        {
+        for(int i=0;i<this.numberOfThreads;i++){
             int start = sizePerThread*i;
             int end   = start + sizePerThread;
             this.searchListContainer.add(removeList.subList(start,end));

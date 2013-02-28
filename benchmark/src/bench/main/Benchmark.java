@@ -29,7 +29,7 @@ public class Benchmark
         final String txSizeMessage = String.format("transaction size (number of elements per transaction). [default=%d].",AbstractBenchmark.DefaultTransactionSize);
         final String newMessage    = "create new database before ingest";
         final String blockMessage  = "block number (default = 0)";
-        final String operationMessage = "Operation [create|delete|standard_ingest|standard_e_ingest|accelerated_ingest|accelerated_e_ingest|search]";
+        final String operationMessage = "Operation [create|delete|standard_ingest|standard_e_ingest|accelerated_ingest|accelerated_e_ingest|search|bfs|dfs]";
         final String indexMessage = "IndexType [none|gr|ge|lu]";
         final String useLocalMapMessage = "Use local map to cache object id";
         final String edgelistMessage = "file path for edge-list file";
