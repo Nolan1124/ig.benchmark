@@ -356,7 +356,7 @@ class operation(runnable.operation):
         arguments = [binary,"-jar",jarFile,"-engine",engine,"-operation",ttype,"-index",index,
                      "-property",propertyObject.fileName,
                      "-verbose",str(40),
-                     "-scale",str(scale),
+                     "-size",str(scale),
                      "-eit",str(threads),
                      "-tsize",str(txsize),
                      "-profile",profileName,

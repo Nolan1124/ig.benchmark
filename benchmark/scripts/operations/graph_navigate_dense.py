@@ -90,10 +90,74 @@ class operation(db_benchmark.operation):
                         print >> f,"0,1"
                         f.flush()
                         f.close()
-                        self.ig_navigate("dfs",engine.name,self.propertyFile,_index,_v_size,1,_txsize,"navigate_profileName","search.txt")
-                        try:
-                            os.remove("object_id.map")
-                        except:
+                        navigate_profileName = "navigate.profile"
+                        self.ig_navigate("dfs",engine.name,self.propertyFile,_index,_v_size,1,_txsize,navigate_profileName,"search.txt")
+                     
+                        if self.case_object:
+                            f = file(navigate_profileName,"r")
+                            line = f.readline()
+                            data = eval(line)
+                            platform_object = self.db.create_unique_object(db_objects.model.platform,"name",data["os"])
+                            index_object = self.db.create_unique_object(db_objects.model.index_type,"name",_index)
+                            case_data_object = self.db.create_object(db_objects.model.case_data,
+                                                                     timestamp=self.db.now_string(True),
+                                                                     case_id=self.case_object.id,
+                                                                     tag_id=self.tag_object.id,
+                                                                     engine_id=engine.id,
+                                                                     size=data["size"],
+                                                                     time=data["time"],
+                                                                     memory_init=data["mem_init"],
+                                                                     memory_used=data["mem_used"],
+                                                                     memory_committed=data["mem_committed"],
+                                                                     memory_max=data["mem_max"],
+                                                                     op_size=data["opsize"],
+                                                                     rate=data["rate"],
+                                                                     page_size=_page_size,
+                                                                     cache_init=self.propertyFile.getInitCache(),
+                                                                     cache_max=self.propertyFile.getMaxCache(),
+                                                                     tx_size=_txsize,
+                                                                     platform_id=platform_object.id,
+                                                                     threads=1,
+                                                                     index_id=index_object.id,
+                                                                     status=1
+                                                                     )
+                            if self.diskmap:
+                                case_data_object.setDataValue("diskmap",self.diskmap)
+                                pass
+                            case_data_object.setDataValue("connections",_connections_)
+                            case_data_object.setDataValue("depth",self.depth)
+                            case_data_object.setDataValue("limit",self.limit)
+                            self.db.update(case_data_object)
+                            case_data_key = case_data_object.generateKey()
+                            case_data_stat_object = self.db.fetch_using_generic(db_objects.model.case_data_stat,
+                                                                                key=case_data_key,
+                                                                                case_id=self.case_object.id
+                                                                                )
+                            if (len(case_data_stat_object) == 0):
+                                case_data_stat_object = self.db.create_unique_object(db_objects.model.case_data_stat,
+                                                                                     "key",case_data_key,
+                                                                                     case_id=self.case_object.id
+                                                                                     )
+                            else:
+                                case_data_stat_object = case_data_stat_object[0]
+                                pass
+                            case_data_stat_object.addCounter()
+                            case_data_stat_object.setRateStat(data["rate"])
+                            case_data_stat_object.setTimeStat(data["time"])
+                            case_data_stat_object.setMemInitStat(data["mem_init"])
+                            case_data_stat_object.setMemUsedStat(data["mem_used"])
+                            case_data_stat_object.setMemCommittedStat(data["mem_committed"])
+                            case_data_stat_object.setMemMaxStat(data["mem_max"])
+                            self.db.update(case_data_stat_object)
+                            f.close()
+                            try:
+                                os.remove(navigate_profileName)
+                            except:
+                                pass
+                            try:
+                                os.remove("object_id.map")
+                            except:
+                                pass
                             pass
                         pass
                     pass
