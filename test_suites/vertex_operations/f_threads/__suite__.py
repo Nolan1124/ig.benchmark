@@ -1,12 +1,5 @@
 name = "Threads"
 description = "Vertex Ingestion as a function of number of threads."
-problem_size = {
-    "mini":{"graph_size":[pow(2,20)]},
-    "small":{"graph_size":[pow(2,21)]},
-    "medium":{"graph_size":[pow(2,22)]},
-    "large":{"graph_size":[pow(2,23)]},
-    "huge":{"graph_size":[pow(2,24)]},
-}
 
 cases = [
     {
